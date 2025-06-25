@@ -15,6 +15,13 @@
       "when": 1750681120479,
       "tag": "0001_worthless_valkyrie",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1750695846608,
+      "tag": "0002_spooky_thor_girl",
+      "breakpoints": true
     }
   ]
 }

@@ -1,17 +1,26 @@
-import { Body, Controller, Get, Post, Res, UsePipes } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Res,
+  UseGuards,
+  UsePipes,
+} from '@nestjs/common';
 import { UserService } from './user.service';
-import { ZodValidationPipe } from 'src/utilities/zod/validation.pipe';
+import { ZodValidationPipe } from 'src/utils/zod/validation.pipe';
 import { registerUserDto, registerUserSchema } from './types/dto';
 import { FastifyReply } from 'fastify';
+import { AuthGuard } from 'src/auth/guard/auth.guard';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('register')
-  @UsePipes(new ZodValidationPipe(registerUserSchema))
   async register(
-    @Body() registerUserDto: registerUserDto,
+    @Body(new ZodValidationPipe(registerUserSchema))
+    registerUserDto: registerUserDto,
     @Res() res: FastifyReply,
   ): Promise<any> {
     const newUser = await this.userService.add(
@@ -25,4 +34,8 @@ export class UserController {
       data: newUser,
     });
   }
+
+  @Get('auth')
+  @UseGuards(AuthGuard)
+  async getCurrent(): Promise<any> {}
 }

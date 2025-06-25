@@ -7,40 +7,90 @@ import {
 import * as schema from './schema';
 import { and, eq } from 'drizzle-orm';
 import { ConfigService } from '@nestjs/config';
+import { TRegisteredUser, TUser } from './types/type';
+import bcrypt from 'bcrypt';
+import { TServiceResponse } from 'src/utils/types/api.types';
 
 @Injectable()
 export class UserService {
   constructor(
-    @Inject(ADMIN_CONNECTION)
+    @Inject(DATABASE_CONNECTION)
     private readonly database: NodePgDatabase<typeof schema>,
+    private readonly cfgService: ConfigService,
   ) {}
 
-  async add(username: string, password: string): Promise<any> {
+  async findExact(
+    username: string,
+    password: string,
+  ): Promise<TUser | TServiceResponse> {
+    const users = await this.database
+      .select()
+      .from(schema.userTable)
+      .where(eq(schema.userTable.username, username))
+      .limit(1);
+
+    const user = users[0];
+    // no user
+    if (!user) {
+      return { message: 'No user with this username existed' };
+    }
+
+    const comparePassword = await bcrypt.compare(password, user[0].password);
+
+    // wrong password
+    if (!comparePassword) {
+      return { message: 'Incorrect password' };
+    }
+
+    return user[0];
+  }
+
+  async findById(id: string): Promise<TUser> {
+    const users = await this.database
+      .select()
+      .from(schema.userTable)
+      .where(eq(schema.userTable.id, id));
+
+    const user = users[0];
+
+    // user not found by id
+    if (!user) {
+      console.log(`Not found parameter id = ${id}`);
+      throw new BadRequestException("User isn't found by id");
+    }
+
+    // user found
+    return user;
+  }
+
+  async add(username: string, password: string): Promise<TRegisteredUser> {
     console.log(this.database);
     // dupe username check
-    const dupedUsername = await this.database.query.userTable.findFirst({
-      where: eq(schema.userTable.username, username),
-    });
-
-    if (dupedUsername) {
+    const dupedUsername = await this.database
+      .select({ id: schema.userTable.id, username: schema.userTable.username })
+      .from(schema.userTable)
+      .where(eq(schema.userTable.username, username));
+    if (dupedUsername[0]) {
       throw new BadRequestException(
         'Username already existed, please use another username',
       );
     }
 
     // add new user to database
+    const hashedPassword = await bcrypt.hash(
+      password,
+      Number(this.cfgService.getOrThrow('SALTROUND')),
+    );
     const newUser = await this.database
       .insert(schema.userTable)
-      .values({ username: username, password: password })
+      .values({ username: username, password: hashedPassword })
       .returning({
         id: schema.userTable.id,
         username: schema.userTable.username,
       });
 
-    console.log(`new user: ${newUser}`);
+    // console.log(`new user: ${newUser}`);
 
     return newUser[0];
   }
-
-  async findExact(username: string, password: string): Promise<any> {}
 }

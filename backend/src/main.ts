@@ -1,12 +1,15 @@
 import 'dotenv/config';
 import fastifyExpress from '@fastify/express';
-import session from 'express-session';
+import fastifySession from '@fastify/session';
+import fastifyCookie from '@fastify/cookie';
 import { NestFactory } from '@nestjs/core';
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
+import './utils/session';
+import { PgSessionStore, pool } from './utils/session';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -16,14 +19,24 @@ async function bootstrap() {
     }),
   );
 
-  const fastifyInstance = app.getHttpAdapter().getInstance();
-  if (typeof fastifyInstance.use !== 'function') {
-    await fastifyInstance.register(fastifyExpress);
-  }
+  app.setGlobalPrefix('api');
 
-  app.use(
-    session({ secret: 'lolz123', resave: false, saveUninitialized: false }),
-  );
+  const fastifyInstance = app.getHttpAdapter().getInstance();
+
+  await fastifyInstance.register(fastifyCookie, {
+    secret: process.env.COOKIE_SECRET as string,
+  });
+
+  await fastifyInstance.register(fastifySession, {
+    secret: process.env.SESSION_SECRET as string,
+    saveUninitialized: false,
+    cookie: { secure: false, maxAge: 60000 },
+    store: new PgSessionStore({
+      pool: pool,
+      tableName: 'user_session',
+      createTableIfMissing: true,
+    }),
+  });
 
   await app.listen(process.env.BACKEND_PORT ?? 3000);
 }

@@ -1,6 +1,10 @@
 import { Module } from '@nestjs/common';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { ADMIN_CONNECTION, DATABASE_CONNECTION } from './database.connection';
+import {
+  ADMIN_CONNECTION,
+  DATABASE_CONNECTION,
+  USER_CONNECTION,
+} from './database.connection';
 import { ConfigService } from '@nestjs/config';
 import * as userSchema from '../user/schema';
 import { Pool } from 'pg';
@@ -13,7 +17,7 @@ const dbSchemas = {
 @Module({
   providers: [
     {
-      provide: DATABASE_CONNECTION,
+      provide: USER_CONNECTION,
       useFactory: (dbUrl: DatabaseUrl) => {
         const pool = new Pool({
           connectionString: dbUrl.dbUrl(),
@@ -36,6 +40,6 @@ const dbSchemas = {
     },
     DatabaseUrl,
   ],
-  exports: [ADMIN_CONNECTION, DATABASE_CONNECTION],
+  exports: [ADMIN_CONNECTION, USER_CONNECTION],
 })
 export class DatabaseModule {}
