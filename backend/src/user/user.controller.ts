@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Post,
+  Req,
   Res,
   UseGuards,
   UsePipes,
@@ -10,8 +11,11 @@ import {
 import { UserService } from './user.service';
 import { ZodValidationPipe } from 'src/utils/zod/validation.pipe';
 import { registerUserDto, registerUserSchema } from './types/dto';
-import { FastifyReply } from 'fastify';
+import { FastifyReply, FastifyRequest } from 'fastify';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
+import { Token } from 'src/auth/decoratorParam/token.decorator';
+import { TUser } from './types/type';
+import { TApiResponse } from 'src/utils/types/api.types';
 
 @Controller('user')
 export class UserController {
@@ -35,7 +39,18 @@ export class UserController {
     });
   }
 
-  @Get('auth')
+  @Get('current')
   @UseGuards(AuthGuard)
-  async getCurrent(): Promise<any> {}
+  async getCurrent(
+    @Token() user: TUser,
+    @Res() res: FastifyReply,
+  ): Promise<any> {
+    const { password, ...saveUser } = user;
+    const response: TApiResponse<Omit<TUser, 'password'>> = {
+      message: 'User is logged in!',
+      statusCode: 200,
+      data: saveUser,
+    };
+    res.send(response);
+  }
 }

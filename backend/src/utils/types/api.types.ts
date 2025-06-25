@@ -4,7 +4,7 @@ export type TApiResponse<T> =
       statusCode: number;
       error: string;
     }
-  | { message: string; statusCode: number; data: T };
+  | { message: string; statusCode: number; data?: T };
 
 export type TServiceResponse = {
   message: string;

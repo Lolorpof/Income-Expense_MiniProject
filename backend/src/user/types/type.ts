@@ -8,4 +8,6 @@ export type TUser = InferSelectModel<typeof schema.userTable>;
 // extra types
 export type TRegisteredUser = { id: string; username: string };
 
-export type TUserSession = { id: string };
+export type TSerializedUser = { id: string };
+
+export type TDeserializedUser = TUser | undefined;

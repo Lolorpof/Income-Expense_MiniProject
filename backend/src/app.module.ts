@@ -5,6 +5,8 @@ import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { MoneyModule } from './money/money.module';
+import { deSerializerGuard } from './auth/middleware/deSerializer.fake.guard';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -15,6 +17,6 @@ import { MoneyModule } from './money/money.module';
     MoneyModule,
   ],
   controllers: [AppController],
-  providers: [],
+  providers: [{ provide: APP_GUARD, useClass: deSerializerGuard }],
 })
 export class AppModule {}

@@ -35,14 +35,14 @@ export class UserService {
       return { message: 'No user with this username existed' };
     }
 
-    const comparePassword = await bcrypt.compare(password, user[0].password);
+    const comparePassword = await bcrypt.compare(password, user.password);
 
     // wrong password
     if (!comparePassword) {
       return { message: 'Incorrect password' };
     }
 
-    return user[0];
+    return user;
   }
 
   async findById(id: string): Promise<TUser> {
@@ -64,7 +64,7 @@ export class UserService {
   }
 
   async add(username: string, password: string): Promise<TRegisteredUser> {
-    console.log(this.database);
+    // console.log(this.database);
     // dupe username check
     const dupedUsername = await this.database
       .select({ id: schema.userTable.id, username: schema.userTable.username })
