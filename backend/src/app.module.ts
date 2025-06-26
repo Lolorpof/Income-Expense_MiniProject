@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { UserModule } from './user/user.module';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { MoneyModule } from './money/money.module';
-import { deSerializerGuard } from './auth/middleware/deSerializer.fake.guard';
+import { DeSerializerGuard } from './auth/middleware/deSerializer.fake.guard';
 import { APP_GUARD } from '@nestjs/core';
 
 @Module({
@@ -17,6 +17,6 @@ import { APP_GUARD } from '@nestjs/core';
     MoneyModule,
   ],
   controllers: [AppController],
-  providers: [{ provide: APP_GUARD, useClass: deSerializerGuard }],
+  providers: [{ provide: APP_GUARD, useClass: DeSerializerGuard }],
 })
 export class AppModule {}

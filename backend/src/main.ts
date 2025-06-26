@@ -9,21 +9,15 @@ import {
 import { AppModule } from './app.module';
 import './utils/session';
 import { PgSessionStore, pool } from './utils/session';
-import { UserService } from './user/user.service';
-import { deSerializerPlugin } from './auth/plugin/deSerializer.plugin';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter({
-      logger: { level: 'info', transport: { target: 'pino-pretty' } },
-    }),
-  );
+  // get Adapter and Instance
+  const fastifyAdapter = new FastifyAdapter({
+    logger: { level: 'info', transport: { target: 'pino-pretty' } },
+  });
+  const fastifyInstance = fastifyAdapter.getInstance();
 
-  app.setGlobalPrefix('api');
-
-  const fastifyInstance = app.getHttpAdapter().getInstance();
-
+  // register plugins BEFORE Nest bootstrap app
   await fastifyInstance.register(fastifyCookie, {
     secret: process.env.COOKIE_SECRET as string,
   });
@@ -31,6 +25,7 @@ async function bootstrap() {
   await fastifyInstance.register(fastifySession, {
     secret: process.env.SESSION_SECRET as string,
     saveUninitialized: false,
+    cookieName: process.env.COOKIE_NAME as string,
     cookie: { secure: false, maxAge: Number(process.env.SESSION_DEV_AGE) },
     store: new PgSessionStore({
       pool: pool,
@@ -43,6 +38,14 @@ async function bootstrap() {
   // ***trying to implement via hooks as plugin but failed
   // const userService = app.get(UserService);
   // await fastifyInstance.register(deSerializerPlugin(userService));
+
+  // bootstrap Nest app AFTER register plugins
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    fastifyAdapter,
+  );
+
+  app.setGlobalPrefix('api');
 
   await app.listen(process.env.BACKEND_PORT ?? 3000);
 }

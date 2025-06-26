@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Param,
@@ -14,12 +15,19 @@ import { AuthService } from './auth.service';
 import { loginUserDto, loginUserSchema } from './types/dto';
 import { Session } from './decoratorParam/session.decorator';
 import { TApiResponse } from 'src/utils/types/api.types';
-import { TSerializedUser } from 'src/user/types/type';
 import { LoginGuard } from './guard/login.guard';
+import { AuthGuard } from './guard/auth.guard';
+import { fastifySession } from '@fastify/session';
+import { Token } from './decoratorParam/token.decorator';
+import { TSerializedUser, TUser } from 'src/user/types/type';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) {}
   @Post('user/login')
   @UseGuards(LoginGuard)
   async login(
@@ -40,5 +48,27 @@ export class AuthController {
       statusCode: 200,
     };
     res.send(response);
+  }
+
+  @Post('user/logout')
+  @UseGuards(AuthGuard)
+  async logout(
+    @Token() user: TUser,
+    @Req() req: FastifyRequest,
+    @Res() res: FastifyReply,
+  ) {
+    req.session.destroy((err) => {
+      if (err) {
+        throw new BadRequestException('An error occured when logging out');
+      }
+
+      res.clearCookie(this.configService.getOrThrow('COOKIE_NAME'));
+      const response: TApiResponse<TSerializedUser> = {
+        message: 'Succesfully logged out!',
+        statusCode: 200,
+        data: { id: user.id },
+      };
+      res.send(response);
+    });
   }
 }

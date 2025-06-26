@@ -5,7 +5,7 @@ import { FastifyRequest } from 'fastify';
 import { UserService } from 'src/user/user.service';
 
 @Injectable()
-export class deSerializerGuard implements CanActivate {
+export class DeSerializerGuard implements CanActivate {
   constructor(private readonly userService: UserService) {}
   async canActivate(ctx: ExecutionContext): Promise<boolean> {
     const req: FastifyRequest = ctx.switchToHttp().getRequest();
