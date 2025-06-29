@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { isTServiceResponse } from 'src/utils/types/api.types';
 import { TUser, TSerializedUser } from 'src/user/types/type';
@@ -19,7 +19,12 @@ export class AuthService {
     const user = await this.userService.findExact(username, password);
 
     if (isTServiceResponse(user)) {
-      throw new UnauthorizedException(user.message);
+      throw new UnauthorizedException({
+        ok: false,
+        message: user.message,
+        error: 'Unauthorized',
+        statusCode: HttpStatus.UNAUTHORIZED,
+      });
     }
 
     return user;

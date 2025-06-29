@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  HttpStatus,
   Param,
   Post,
   Req,
@@ -44,6 +45,7 @@ export class AuthController {
     session.user = { id };
 
     const response: TApiResponse<undefined> = {
+      ok: true,
       message: 'User logged in succesfully!',
       statusCode: 200,
     };
@@ -59,11 +61,17 @@ export class AuthController {
   ) {
     req.session.destroy((err) => {
       if (err) {
-        throw new BadRequestException('An error occured when logging out');
+        throw new BadRequestException({
+          ok: false,
+          message: 'An error occured when logging out',
+          error: 'Bad Request',
+          statusCode: HttpStatus.BAD_REQUEST,
+        });
       }
 
       res.clearCookie(this.configService.getOrThrow('COOKIE_NAME'));
       const response: TApiResponse<TSerializedUser> = {
+        ok: true,
         message: 'Succesfully logged out!',
         statusCode: 200,
         data: { id: user.id },

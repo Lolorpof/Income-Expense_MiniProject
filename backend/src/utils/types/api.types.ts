@@ -1,10 +1,11 @@
 export type TApiResponse<T> =
   | {
+      ok: false;
       message: string;
       statusCode: number;
       error: string;
     }
-  | { message: string; statusCode: number; data?: T };
+  | { ok: true; message: string; statusCode: number; data?: T };
 
 export type TServiceResponse = {
   message: string;

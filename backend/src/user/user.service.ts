@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import {
   ADMIN_CONNECTION,
@@ -56,7 +61,12 @@ export class UserService {
     // user not found by id
     if (!user) {
       console.log(`Not found parameter id = ${id}`);
-      throw new BadRequestException("User isn't found by id");
+      throw new BadRequestException({
+        ok: false,
+        message: "User isn't found by id",
+        error: 'Bad Request',
+        statusCode: HttpStatus.BAD_REQUEST,
+      });
     }
 
     // user found
@@ -71,9 +81,12 @@ export class UserService {
       .from(schema.userTable)
       .where(eq(schema.userTable.username, username));
     if (dupedUsername[0]) {
-      throw new BadRequestException(
-        'Username already existed, please use another username',
-      );
+      throw new BadRequestException({
+        ok: false,
+        message: 'Username already existed, please use another username',
+        error: 'Bad Request',
+        statusCode: HttpStatus.BAD_REQUEST,
+      });
     }
 
     // add new user to database

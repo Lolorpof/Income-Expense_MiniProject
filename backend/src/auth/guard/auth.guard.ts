@@ -1,6 +1,7 @@
 import {
   CanActivate,
   ExecutionContext,
+  HttpStatus,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -13,7 +14,12 @@ export class AuthGuard implements CanActivate {
 
     // throw custom exceptions
     if (!req.user) {
-      throw new UnauthorizedException("User isn't logged in");
+      throw new UnauthorizedException({
+        ok: false,
+        message: "User isn't logged in",
+        error: 'Unauthorized',
+        statusCode: HttpStatus.UNAUTHORIZED,
+      });
     }
 
     // check deSerialized user, existed

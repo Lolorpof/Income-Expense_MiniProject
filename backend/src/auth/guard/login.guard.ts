@@ -2,6 +2,7 @@ import {
   BadRequestException,
   CanActivate,
   ExecutionContext,
+  HttpStatus,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -14,7 +15,12 @@ export class LoginGuard implements CanActivate {
 
     // throw custom exceptions
     if (req.user) {
-      throw new BadRequestException('User is already logged in');
+      throw new BadRequestException({
+        ok: false,
+        message: 'User is already logged in',
+        error: 'Bad Request',
+        statusCode: HttpStatus.BAD_REQUEST,
+      });
     }
 
     // check deSerialized user, not existed

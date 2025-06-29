@@ -9,6 +9,7 @@ import {
 import { AppModule } from './app.module';
 import './utils/session';
 import { PgSessionStore, pool } from './utils/session';
+import fastifyCors from '@fastify/cors';
 
 async function bootstrap() {
   // get Adapter and Instance
@@ -18,6 +19,11 @@ async function bootstrap() {
   const fastifyInstance = fastifyAdapter.getInstance();
 
   // register plugins BEFORE Nest bootstrap app
+  await fastifyInstance.register(fastifyCors, {
+    origin: ['http://localhost:5173'],
+    credentials: true,
+  });
+
   await fastifyInstance.register(fastifyCookie, {
     secret: process.env.COOKIE_SECRET as string,
   });

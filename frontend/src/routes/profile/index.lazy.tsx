@@ -1,0 +1,37 @@
+import { Spinner } from "@/components/ui/spinner";
+import { getCurrentUser } from "@/fetching/queries/getCurrentUser";
+import { useQuery } from "@tanstack/react-query";
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
+
+export const Route = createLazyFileRoute("/profile/")({
+  component: RouteComponent,
+});
+
+function RouteComponent() {
+  const { data: currentUser, isLoading, error } = useQuery(getCurrentUser);
+  const navigate = useNavigate();
+
+  if (currentUser && !currentUser.ok) {
+    navigate({ to: "/auth", search: { type: "login" } });
+  }
+  return isLoading || !currentUser ? (
+    <>
+      <Spinner size={32} />
+    </>
+  ) : error ? (
+    <>Error occured when fetching</>
+  ) : (
+    currentUser.ok && (
+      <>
+        <div className="flex w-dvw justify-center my-4">
+          <div className="flex flex-col shadow p-4 items-center">
+            <text className="text-2xl font-bold">Username</text>
+            <text className="text-cyan-800 text-3xl">
+              {currentUser.data.username}
+            </text>
+          </div>
+        </div>
+      </>
+    )
+  );
+}

@@ -14,14 +14,16 @@ import { registerUserDto, registerUserSchema } from './types/dto';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
 import { Token } from 'src/auth/decoratorParam/token.decorator';
-import { TUser } from './types/type';
+import { TRegisteredUser, TUser } from './types/type';
 import { TApiResponse } from 'src/utils/types/api.types';
+import { LoginGuard } from 'src/auth/guard/login.guard';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('register')
+  @UseGuards(LoginGuard)
   async register(
     @Body(new ZodValidationPipe(registerUserSchema))
     registerUserDto: registerUserDto,
@@ -32,11 +34,14 @@ export class UserController {
       registerUserDto.password,
     );
 
-    res.status(201).send({
+    const response: TApiResponse<TRegisteredUser> = {
+      ok: true,
       message: 'Successfully registered user!',
       statusCode: 201,
       data: newUser,
-    });
+    };
+
+    res.status(201).send(response);
   }
 
   @Get('current')
@@ -47,6 +52,7 @@ export class UserController {
   ): Promise<any> {
     const { password, ...saveUser } = user;
     const response: TApiResponse<Omit<TUser, 'password'>> = {
+      ok: true,
       message: 'User is logged in!',
       statusCode: 200,
       data: saveUser,
