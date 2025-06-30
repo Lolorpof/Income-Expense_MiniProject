@@ -23,7 +23,9 @@ function RouteComponent() {
 
   return isLoading ? (
     <>
-      <Spinner size={32} />
+      <div className="flex w-full justify-center">
+        <Spinner size={36} className="mt-4" />
+      </div>
     </>
   ) : (
     <>

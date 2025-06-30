@@ -15,6 +15,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthIndexRouteImport } from './routes/auth/index'
 
 const ProfileIndexLazyRouteImport = createFileRoute('/profile/')()
+const CalendarEntryIndexLazyRouteImport = createFileRoute('/calendarEntry/')()
+const CalendarEntryDateLazyRouteImport = createFileRoute(
+  '/calendarEntry/$date',
+)()
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -26,39 +30,72 @@ const ProfileIndexLazyRoute = ProfileIndexLazyRouteImport.update({
   path: '/profile/',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/profile/index.lazy').then((d) => d.Route))
+const CalendarEntryIndexLazyRoute = CalendarEntryIndexLazyRouteImport.update({
+  id: '/calendarEntry/',
+  path: '/calendarEntry/',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/calendarEntry/index.lazy').then((d) => d.Route),
+)
 const AuthIndexRoute = AuthIndexRouteImport.update({
   id: '/auth/',
   path: '/auth/',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/auth/index.lazy').then((d) => d.Route))
+const CalendarEntryDateLazyRoute = CalendarEntryDateLazyRouteImport.update({
+  id: '/calendarEntry/$date',
+  path: '/calendarEntry/$date',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/calendarEntry/$date.lazy').then((d) => d.Route),
+)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/calendarEntry/$date': typeof CalendarEntryDateLazyRoute
   '/auth': typeof AuthIndexRoute
+  '/calendarEntry': typeof CalendarEntryIndexLazyRoute
   '/profile': typeof ProfileIndexLazyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/calendarEntry/$date': typeof CalendarEntryDateLazyRoute
   '/auth': typeof AuthIndexRoute
+  '/calendarEntry': typeof CalendarEntryIndexLazyRoute
   '/profile': typeof ProfileIndexLazyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/calendarEntry/$date': typeof CalendarEntryDateLazyRoute
   '/auth/': typeof AuthIndexRoute
+  '/calendarEntry/': typeof CalendarEntryIndexLazyRoute
   '/profile/': typeof ProfileIndexLazyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/profile'
+  fullPaths:
+    | '/'
+    | '/calendarEntry/$date'
+    | '/auth'
+    | '/calendarEntry'
+    | '/profile'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/profile'
-  id: '__root__' | '/' | '/auth/' | '/profile/'
+  to: '/' | '/calendarEntry/$date' | '/auth' | '/calendarEntry' | '/profile'
+  id:
+    | '__root__'
+    | '/'
+    | '/calendarEntry/$date'
+    | '/auth/'
+    | '/calendarEntry/'
+    | '/profile/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CalendarEntryDateLazyRoute: typeof CalendarEntryDateLazyRoute
   AuthIndexRoute: typeof AuthIndexRoute
+  CalendarEntryIndexLazyRoute: typeof CalendarEntryIndexLazyRoute
   ProfileIndexLazyRoute: typeof ProfileIndexLazyRoute
 }
 
@@ -78,6 +115,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileIndexLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/calendarEntry/': {
+      id: '/calendarEntry/'
+      path: '/calendarEntry'
+      fullPath: '/calendarEntry'
+      preLoaderRoute: typeof CalendarEntryIndexLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/': {
       id: '/auth/'
       path: '/auth'
@@ -85,12 +129,21 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/calendarEntry/$date': {
+      id: '/calendarEntry/$date'
+      path: '/calendarEntry/$date'
+      fullPath: '/calendarEntry/$date'
+      preLoaderRoute: typeof CalendarEntryDateLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CalendarEntryDateLazyRoute: CalendarEntryDateLazyRoute,
   AuthIndexRoute: AuthIndexRoute,
+  CalendarEntryIndexLazyRoute: CalendarEntryIndexLazyRoute,
   ProfileIndexLazyRoute: ProfileIndexLazyRoute,
 }
 export const routeTree = rootRouteImport

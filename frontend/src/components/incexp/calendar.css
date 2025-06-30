@@ -1,0 +1,14 @@
+#weekdays span {
+  width: calc(100% / 7);
+  justify-content: center;
+  display: flex;
+}
+
+/* #date div {
+  width: calc(100% / 7);
+  justify-content: center;
+  display: flex;
+  aspect-ratio: 1;
+  border: 4px;
+  border-radius: 1px;
+} */

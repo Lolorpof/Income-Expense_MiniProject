@@ -3,11 +3,14 @@ import "../utils/queryClient";
 import { getCurrentUser } from "../fetching/queries/getCurrentUser";
 import { useQuery } from "@tanstack/react-query";
 import { Spinner } from "@/components/ui/spinner";
+import Calendar from "@/components/incexp/Calendar";
+import type { TRouterContext } from "@/types/route.type";
 
 export const Route = createFileRoute("/")({
   component: () => {
     const { data: currentUser, isLoading, error } = useQuery(getCurrentUser);
     const navigate = useNavigate();
+    const { queryClient }: TRouterContext = Route.useRouteContext();
 
     if (currentUser && !currentUser.ok) {
       navigate({ to: "/auth", search: { type: "login" } });
@@ -15,12 +18,22 @@ export const Route = createFileRoute("/")({
 
     return isLoading || !currentUser || !currentUser.ok ? (
       <>
-        <Spinner size={32} />
+        <div className="flex w-full justify-center">
+          <Spinner size={36} className="mt-4" />
+        </div>
       </>
     ) : error ? (
       <>Error when fetching: {error}</>
     ) : (
-      currentUser.ok && <>{currentUser.message}</>
+      currentUser.ok && (
+        <>
+          <Calendar
+            key={currentUser.data.id}
+            currentUser={currentUser.data}
+            queryClient={queryClient}
+          />
+        </>
+      )
     );
   },
 });
