@@ -32,9 +32,11 @@ createRoot(document.getElementById("root")!).render(
       <Toaster
         toastOptions={{
           classNames: {
-            success: "bg-emerald-700 text-gray-200",
-            error: "bg-rose-700 text-gray-100",
+            success: "bg-emerald-700 text-gray-200 font-semibold",
+            error: "bg-rose-700 text-gray-100 font-semibold",
+            warning: "bg-yellow-300 text-black font-semibold",
           },
+          closeButton: true,
         }}
       />
     </StrictMode>

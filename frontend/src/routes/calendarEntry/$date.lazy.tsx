@@ -1,11 +1,13 @@
 import { Spinner } from "@/components/ui/spinner";
 import { getEntryByDate } from "@/fetching/queries/getEntryByDate";
-import { QueryClient, useQuery } from "@tanstack/react-query";
+import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import dayjs from "dayjs";
-import { Button } from "@/components/ui/button";
 import { LucidePlus } from "lucide-react";
+import { createEntryRaw } from "@/fetching/raws/createEntryRaw";
+import type { Dialog, DialogClose } from "@/components/ui/dialog";
+import AddListDialog from "@/components/incexp/AddListDialog";
 
 export const Route = createLazyFileRoute("/calendarEntry/$date")({
   component: RouteComponent,
@@ -13,9 +15,26 @@ export const Route = createLazyFileRoute("/calendarEntry/$date")({
 
 function RouteComponent() {
   const { date }: { date: string } = Route.useParams();
-  const { data: entry, isLoading } = useQuery(getEntryByDate(date));
+  const formattedDate = dayjs(date).toDate();
   const displayDate = dayjs(date).format("MMMM, DD YYYY");
   const { queryClient }: { queryClient: QueryClient } = Route.useRouteContext();
+
+  const { data: entry, isLoading } = useQuery(getEntryByDate(date));
+  const {
+    data: createdEntry,
+    mutate,
+    isPending,
+  } = useMutation({
+    mutationKey: ["create", date],
+    mutationFn: () => createEntryRaw(formattedDate),
+  });
+
+  function createList() {
+    // no entry existed yet
+    if (entry && !entry.ok) {
+      mutate();
+    }
+  }
 
   return isLoading || !entry ? (
     <>
@@ -26,11 +45,13 @@ function RouteComponent() {
   ) : (
     <>
       <div className="w-full h-[90vh] flex bg-gray-200 justify-center">
-        <div className="w-[60%] h-fit my-10 rounded-3xl border-8 border-blue-500 bg-blue-200 justify-center">
-          <LucidePlus className="rounded-[100%] size-[4dvh] aspect-square absolute mt-[1%] ml-[1%] bg-emerald-800 hover:cursor-pointer hover:bg-emerald-600 hover:scale-115 text-white duration-200" />
-          <motion.h2 className="text-center m-10 text-4xl font-bold text-cyan-900">
-            {displayDate}
-          </motion.h2>
+        <div className="relative w-[60%] h-fit my-10 rounded-3xl border-8 border-blue-500 bg-blue-200 justify-center">
+          <AddListDialog displayDate={displayDate} />
+          <AnimatePresence mode="wait">
+            <motion.h2 className="text-center m-10 text-4xl font-bold text-cyan-900">
+              {displayDate}
+            </motion.h2>
+          </AnimatePresence>
         </div>
       </div>
     </>
