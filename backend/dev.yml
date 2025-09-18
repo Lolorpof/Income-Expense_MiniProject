@@ -1,5 +1,20 @@
-name: IncomeExpenseApp
 services:
+  backend_dev:
+    container_name: backend_dev
+    build:
+      context: .
+      dockerfile: Dev_Dockerfile
+    volumes:
+      - .:/app
+      - /app/node_modules
+    env_file:
+      - .env
+    ports:
+      - '${BACKEND_PORT}:${BACKEND_PORT}'
+    networks:
+      - test-network
+    depends_on:
+      - database
   database:
     image: postgres:17.6-alpine
     container_name: incexp_database
@@ -12,8 +27,9 @@ services:
     volumes:
       - database_data:/var/lib/postgresql/data
     networks:
-      - the-network
+      - test-network
 networks:
-  the-network:
+  test-network:
+    external: true
 volumes:
   database_data:

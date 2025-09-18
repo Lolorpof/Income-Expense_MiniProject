@@ -20,7 +20,7 @@ async function bootstrap() {
 
   // register plugins BEFORE Nest bootstrap app
   await fastifyInstance.register(fastifyCors, {
-    origin: ['http://localhost:5173'],
+    origin: ['http://localhost:5173', 'http://localhost:7777'],
     credentials: true,
   });
 
@@ -53,6 +53,6 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
 
-  await app.listen(process.env.BACKEND_PORT ?? 3000);
+  await app.listen(process.env.BACKEND_PORT ?? 3000, '0.0.0.0');
 }
 bootstrap();

@@ -30,6 +30,7 @@ const dbSchemas = {
         });
 
         if (!(await testPoolConnection(pool))) {
+          console.error(dbUrl.dbUrl());
           const response: TApiResponse<undefined> = {
             ok: false,
             message: "Can't connect to database",
@@ -51,6 +52,7 @@ const dbSchemas = {
         });
 
         if (!(await testPoolConnection(pool))) {
+          console.error(dbUrl.adminUrl());
           const response: TApiResponse<undefined> = {
             ok: false,
             message: "Can't connect to database",
