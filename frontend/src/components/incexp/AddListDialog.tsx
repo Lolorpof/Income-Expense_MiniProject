@@ -9,26 +9,124 @@ import {
   DialogFooter,
   DialogClose,
 } from "../ui/dialog";
-import { Input } from "../ui/input";
 import { useEffect, useState } from "react";
 import InputField from "./InputField";
-import dayjs from "dayjs";
+import { Button } from "../ui/button";
+import {
+  QueryClient,
+  useMutation,
+  type QueryObserverResult,
+  type RefetchOptions,
+} from "@tanstack/react-query";
+import { createEntryRaw } from "@/fetching/raws/createEntryRaw";
+import { getAllEntriesDateIdByUserId } from "@/fetching/queries/getAllEntriesDateIdByUserId";
+import { getEntryByDate } from "@/fetching/queries/getEntryByDate";
+import type { TIncExpDaily, TListingEntriesComb } from "@/types/money.type";
+import type { TApiResponse } from "@/types/api.type";
+import { createListChild } from "@/fetching/raws/createListChildRaw";
+import { toast } from "sonner";
+import { ListingSchema } from "@/utils/zod/schema";
+import { fromError } from "zod-validation-error";
+import { Spinner } from "../ui/spinner";
 
 Dialog;
 
 export default function AddListDialog({
+  date,
   displayDate,
+  entry,
+  queryClient,
+  entryRefetch,
 }: {
+  date: string;
   displayDate: string;
+  entry: TApiResponse<TListingEntriesComb>;
+  queryClient: QueryClient;
+  entryRefetch: (
+    options?: RefetchOptions | undefined
+  ) => Promise<QueryObserverResult<TApiResponse<TListingEntriesComb>, Error>>;
 }) {
   const [action, setAction] = useState("");
   const [time, setTime] = useState("");
   const [actionSymbol, setActionSymbol] = useState("add");
   const [amount, setAmount] = useState(0);
+
+  const { mutate: dayEntryMutate, isPending: dayEntryPending } = useMutation({
+    mutationKey: ["create", date],
+    mutationFn: () => {
+      return createEntryRaw(date);
+    },
+    onSuccess: async (data) => {
+      if (data.ok) {
+        await entryRefetch();
+        console.log(actionSymbol);
+        const formattedResult = ListingSchema.safeParse({
+          action: action,
+          time: time,
+          spentOrEarned: actionSymbol === "add" ? 1 * amount : -1 * amount,
+          moneyDailyId: data.data.id,
+        });
+        // validate form with zod
+        if (!formattedResult.success) {
+          const err = fromError(formattedResult.error).toString();
+          console.error(err);
+          toast.error(err, {
+            richColors: true,
+            closeButton: true,
+            position: "top-center",
+          });
+          return;
+        }
+
+        listingMutate(formattedResult.data);
+      } else {
+        toast.error("Can't create entry", {
+          richColors: true,
+          closeButton: true,
+          position: "top-center",
+        });
+      }
+    },
+  });
+
+  const { mutate: listingMutate, isPending: listingPending } = useMutation({
+    mutationKey: ["create", action, time],
+    mutationFn: createListChild,
+    onSuccess: async () => {
+      await entryRefetch();
+    },
+  });
   // debug InputField component
-  // useEffect(() => {
-  //   console.log(amount);
-  // }, [amount]);
+  useEffect(() => {
+    console.log(amount);
+  }, [amount]);
+
+  const clickAddListing = () => {
+    // entry doesn't existed yet, create it
+    if (!entry.ok) {
+      dayEntryMutate();
+    } else {
+      const formattedResult = ListingSchema.safeParse({
+        action: action,
+        time: time,
+        spentOrEarned: actionSymbol === "add" ? 1 * amount : -1 * amount,
+        moneyDailyId: entry.data[0].id,
+      });
+      // validate form with zod
+      if (!formattedResult.success) {
+        const err = fromError(formattedResult.error).toString();
+        console.error(err);
+        toast.error(err, {
+          richColors: true,
+          closeButton: true,
+          position: "top-center",
+        });
+        return;
+      }
+
+      listingMutate(formattedResult.data);
+    }
+  };
 
   return (
     <>
@@ -73,26 +171,23 @@ export default function AddListDialog({
               symbolValue={actionSymbol}
               changeSymbolStateFn={setActionSymbol}
             />
-            {/* <div className="flex items-center">
-              <label className="font-bold min-w-[30%]" title="time">
-                Time:{" "}
-              </label>
-              <Input
-                list="actionType"
-                value={actionType}
-                defaultValue="None"
-                onChange={(e) => setActionType(e.target.value)}
-              />
-              <datalist id="actionType">
-                <option value="None" />
-                <option value="+" />
-                <option value="-" />
-              </datalist>
-              <Input
-                className="ml-2 min-w-fit"
-                placeholder="Time of the day the action is done"
-              />
-            </div> */}
+          </div>
+          <div className="w-full h-full justify-end">
+            <Button
+              className=" bg-emerald-500 hover:bg-emerald-800 text-xl p-4 hover:backdrop-brightness-100 hover:cursor-pointer duration-200"
+              onClick={clickAddListing}
+              disabled={
+                action === "" ||
+                time === "" ||
+                amount == 0 ||
+                String(amount) == "" ||
+                dayEntryPending ||
+                listingPending
+              }
+            >
+              {dayEntryPending || (listingPending && <Spinner size={28} />)}
+              Add
+            </Button>
           </div>
           <DialogFooter></DialogFooter>
         </DialogContent>

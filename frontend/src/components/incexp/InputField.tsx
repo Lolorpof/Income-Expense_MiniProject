@@ -59,8 +59,15 @@ export default function InputField<T>({
                 : "min-w-full w-full")
             }
             placeholder={placeholder}
-            value={value}
+            value={
+              type === "number" && value
+                ? Number(value) < 0
+                  ? -1 * Number(value)
+                  : value
+                : value
+            }
             onChange={(e) => changeStateFn(e.target.value as T)}
+            min={0}
           />
           {children}
         </div>
