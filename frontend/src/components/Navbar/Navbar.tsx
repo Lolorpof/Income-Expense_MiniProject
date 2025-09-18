@@ -5,6 +5,7 @@ import LinkButton from "./LinkButton";
 import type { TRouterContext } from "@/types/route.type";
 import { Spinner } from "../ui/spinner";
 import Logout from "../auth/Logout";
+import { toast } from "sonner";
 
 export default function Navbar() {
   const { data: currentUser, isLoading } = useQuery(getCurrentUser);
@@ -26,7 +27,19 @@ export default function Navbar() {
         ) : (
           <>
             <LinkButton isActive={!!isHome}>
-              <Link to="/" disabled={!!isHome}>
+              <Link
+                to="/"
+                disabled={!!isHome}
+                onClick={() => {
+                  if (currentUser && !currentUser.ok) {
+                    toast.error("You aren't logged in yet.", {
+                      closeButton: true,
+                      richColors: true,
+                      position: "top-center",
+                    });
+                  }
+                }}
+              >
                 Home
               </Link>
             </LinkButton>

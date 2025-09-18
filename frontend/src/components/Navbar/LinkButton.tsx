@@ -1,8 +1,10 @@
 export default function LinkButton({
   isActive,
+  onClick,
   children,
 }: {
   isActive: boolean;
+  onClick?: () => void;
   children: React.ReactNode;
 }) {
   return (
@@ -15,6 +17,7 @@ export default function LinkButton({
           " underline backdrop-brightness-35 text-white cursor-default")
       }
       disabled={isActive}
+      onClick={onClick}
     >
       {children}
     </button>

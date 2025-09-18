@@ -23,12 +23,12 @@ export default function AddListDialog({
 }) {
   const [action, setAction] = useState("");
   const [time, setTime] = useState("");
-  const [actionType, setActionType] = useState("None");
-
+  const [actionSymbol, setActionSymbol] = useState("add");
+  const [amount, setAmount] = useState(0);
   // debug InputField component
-  //   useEffect(() => {
-  //     console.log(action);
-  //   }, [action]);
+  // useEffect(() => {
+  //   console.log(amount);
+  // }, [amount]);
 
   return (
     <>
@@ -62,6 +62,16 @@ export default function AddListDialog({
               placeholder="When the action happens"
               value={time}
               changeStateFn={setTime}
+            />
+            <InputField<number>
+              key="spentEarned"
+              title="Spent/Earned"
+              placeholder="Amount of money"
+              type="number"
+              value={amount}
+              changeStateFn={setAmount}
+              symbolValue={actionSymbol}
+              changeSymbolStateFn={setActionSymbol}
             />
             {/* <div className="flex items-center">
               <label className="font-bold min-w-[30%]" title="time">
