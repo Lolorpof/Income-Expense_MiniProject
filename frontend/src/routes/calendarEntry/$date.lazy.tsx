@@ -1,14 +1,10 @@
 import { Spinner } from "@/components/ui/spinner";
 import { getEntryByDate } from "@/fetching/queries/getEntryByDate";
-import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import dayjs from "dayjs";
-import { createEntryRaw } from "@/fetching/raws/createEntryRaw";
-import type { Dialog, DialogClose } from "@/components/ui/dialog";
 import AddListDialog from "@/components/incexp/AddListDialog";
-import type { TApiResponse } from "@/types/api.type";
-import type { TCreatedEntryForDate } from "@/types/money.type";
 import Listing from "@/components/incexp/Listing";
 
 export const Route = createLazyFileRoute("/calendarEntry/$date")({
@@ -18,7 +14,6 @@ export const Route = createLazyFileRoute("/calendarEntry/$date")({
 function RouteComponent() {
   const { date }: { date: string } = Route.useParams();
   const displayDate = dayjs(date).format("MMMM, DD YYYY");
-  const { queryClient }: { queryClient: QueryClient } = Route.useRouteContext();
 
   const {
     data: entry,
@@ -41,7 +36,6 @@ function RouteComponent() {
             date={date}
             displayDate={displayDate}
             entry={entry}
-            queryClient={queryClient}
             entryRefetch={entryRefetch}
           />
           <AnimatePresence mode="wait">

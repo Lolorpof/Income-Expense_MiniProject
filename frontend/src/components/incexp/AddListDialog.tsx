@@ -7,21 +7,17 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
 } from "../ui/dialog";
 import { useEffect, useState } from "react";
 import InputField from "./InputField";
 import { Button } from "../ui/button";
 import {
-  QueryClient,
   useMutation,
   type QueryObserverResult,
   type RefetchOptions,
 } from "@tanstack/react-query";
 import { createEntryRaw } from "@/fetching/raws/createEntryRaw";
-import { getAllEntriesDateIdByUserId } from "@/fetching/queries/getAllEntriesDateIdByUserId";
-import { getEntryByDate } from "@/fetching/queries/getEntryByDate";
-import type { TIncExpDaily, TListingEntriesComb } from "@/types/money.type";
+import type { TListingEntriesComb } from "@/types/money.type";
 import type { TApiResponse } from "@/types/api.type";
 import { createListChild } from "@/fetching/raws/createListChildRaw";
 import { toast } from "sonner";
@@ -35,13 +31,11 @@ export default function AddListDialog({
   date,
   displayDate,
   entry,
-  queryClient,
   entryRefetch,
 }: {
   date: string;
   displayDate: string;
   entry: TApiResponse<TListingEntriesComb>;
-  queryClient: QueryClient;
   entryRefetch: (
     options?: RefetchOptions | undefined
   ) => Promise<QueryObserverResult<TApiResponse<TListingEntriesComb>, Error>>;
