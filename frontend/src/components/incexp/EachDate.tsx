@@ -26,12 +26,12 @@ export default function EachDate({
       <div
         key={day}
         className={
-          "rounded-md aspect-square flex flex-col items-center bg-gray-300/60 hover:backdrop-brightness-80 hover:cursor-pointer duration-200 " +
-          (entry ? "border-b-10 border-emerald-500 " : "") +
+          "rounded-md aspect-square flex flex-col items-center bg-white/20 hover:bg-white/50 hover:cursor-pointer duration-200 " +
+          (entry ? "border-b-10 border-purple-500 " : "") +
           (day + 1 === currentDate.getDate() &&
             currentMonth === currentDate.getMonth() &&
             currentYear === currentDate.getFullYear() &&
-            "border-4 border-yellow-300 shadow-xl")
+            "border-4 border-amber-500 shadow-white/40 shadow-lg")
         }
         onClick={() =>
           navigate({
@@ -50,11 +50,11 @@ export default function EachDate({
       >
         <span
           className={
-            "mt-2 w-[30%] h-[30%] text-center" +
+            "absolute md:text-md lg:text-2xl text-amber-300 mt-2 max-w-[30%] max-h-[30%] text-center" +
             (day + 1 === currentDate.getDate() &&
             currentMonth === currentDate.getMonth() &&
             currentYear === currentDate.getFullYear()
-              ? " px-1 py-0.5 rounded-4xl bg-amber-300 text-indigo-600 font-bold"
+              ? " px-1 py-0.5 rounded-4xl bg-amber-500 text-violet-800 font-bold"
               : " font-semibold")
           }
         >

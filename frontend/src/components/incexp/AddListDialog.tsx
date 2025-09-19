@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import InputField from "./InputField";
 import { Button } from "../ui/button";
 import {
+  QueryClient,
   useMutation,
   type QueryObserverResult,
   type RefetchOptions,
@@ -32,6 +33,7 @@ export default function AddListDialog({
   displayDate,
   entry,
   entryRefetch,
+  queryClient,
 }: {
   date: string;
   displayDate: string;
@@ -39,6 +41,7 @@ export default function AddListDialog({
   entryRefetch: (
     options?: RefetchOptions | undefined
   ) => Promise<QueryObserverResult<TApiResponse<TListingEntriesComb>, Error>>;
+  queryClient: QueryClient;
 }) {
   const [action, setAction] = useState("");
   const [time, setTime] = useState("");
@@ -52,8 +55,8 @@ export default function AddListDialog({
     },
     onSuccess: async (data) => {
       if (data.ok) {
-        await entryRefetch();
-        console.log(actionSymbol);
+        await queryClient.invalidateQueries({ queryKey: ["entry", date] });
+        await queryClient.invalidateQueries({ queryKey: ["allEntries"] });
         const formattedResult = ListingSchema.safeParse({
           action: action,
           time: time,
@@ -74,6 +77,7 @@ export default function AddListDialog({
 
         listingMutate(formattedResult.data);
       } else {
+        console.log(data);
         toast.error("Can't create entry", {
           richColors: true,
           closeButton: true,
@@ -87,16 +91,18 @@ export default function AddListDialog({
     mutationKey: ["create", action, time],
     mutationFn: createListChild,
     onSuccess: async () => {
-      await entryRefetch();
+      await queryClient.invalidateQueries({ queryKey: ["entry", date] });
+      await queryClient.invalidateQueries({ queryKey: ["allEntries"] });
     },
   });
   // debug InputField component
-  useEffect(() => {
-    console.log(amount);
-  }, [amount]);
+  // useEffect(() => {
+  //   console.log(amount);
+  // }, [amount]);
 
   const clickAddListing = () => {
     // entry doesn't existed yet, create it
+    console.log(entry);
     if (!entry.ok) {
       dayEntryMutate();
     } else {
@@ -104,7 +110,7 @@ export default function AddListDialog({
         action: action,
         time: time,
         spentOrEarned: actionSymbol === "add" ? 1 * amount : -1 * amount,
-        moneyDailyId: entry.data[0].id,
+        moneyDailyId: entry.data.entry.id,
       });
       // validate form with zod
       if (!formattedResult.success) {
@@ -126,26 +132,29 @@ export default function AddListDialog({
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <LucidePlus className="rounded-[100%] size-[4dvh] aspect-square absolute mt-[1%] ml-[1%] bg-emerald-800 hover:cursor-pointer hover:bg-emerald-600 hover:scale-115 text-white duration-200" />
+          <LucidePlus className="rounded-[100%] size-[4dvh] aspect-square absolute mt-[1%] ml-[1%] bg-purple-600 hover:cursor-pointer hover:bg-purple-600/70 hover:scale-115 text-white duration-200" />
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="bg-black/70 border-amber-500">
           <DialogHeader>
-            <DialogTitle>Add an Income-Expense List</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-amber-600">
+              Add an Income-Expense List
+            </DialogTitle>
+            <DialogDescription className="text-amber-500">
               Create a new Income-Expense List for
-              <span className="rounded-md font-bold bg-gray-200 ml-1 p-1">
+              <span className="rounded-md font-bold bg-white/25 ml-1 p-1">
                 {" "}
                 {displayDate}
               </span>
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4 flex flex-wrap gap-2">
+          <div className="py-4 flex flex-wrap gap-2 text-amber-500">
             <InputField<string>
               key="action"
               title="Action"
               placeholder="Action of spending/earning money"
               value={action}
               changeStateFn={setAction}
+              inputClassName="placeholder-amber-100/60"
             />
             <InputField<string>
               key="time"
@@ -154,6 +163,7 @@ export default function AddListDialog({
               placeholder="When the action happens"
               value={time}
               changeStateFn={setTime}
+              inputClassName="placeholder-amber-100/60"
             />
             <InputField<number>
               key="spentEarned"
@@ -164,6 +174,7 @@ export default function AddListDialog({
               changeStateFn={setAmount}
               symbolValue={actionSymbol}
               changeSymbolStateFn={setActionSymbol}
+              inputClassName="placeholder-amber-100/60"
             />
           </div>
           <div className="w-full h-full justify-end">

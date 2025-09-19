@@ -27,8 +27,8 @@ function RouteComponent() {
       <>
         <div className="flex w-dvw justify-center my-4">
           <div className="flex flex-col shadow p-4 items-center">
-            <text className="text-2xl font-bold">Username</text>
-            <text className="text-cyan-800 text-3xl">
+            <text className="text-2xl text-amber-500 font-bold">Username</text>
+            <text className="text-amber-300 text-3xl">
               {currentUser.data.username}
             </text>
           </div>

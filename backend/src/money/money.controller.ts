@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -17,6 +18,8 @@ import {
   createIncExpDailySchema,
   createIncExpListingDto,
   createIncExpListingSchema,
+  deleteIncExpListingDto,
+  deleteIncExpListingSchema,
 } from './types/dto';
 import { ZodValidationPipe } from 'src/utils/zod/validation.pipe';
 import { MoneyService } from './money.service';
@@ -108,6 +111,27 @@ export class MoneyController {
       message: 'Successfully insert listing into day entry',
       statusCode: 201,
       data: createdListForDay,
+    };
+
+    res.status(response.statusCode).send(response);
+  }
+
+  @Delete('auth/delete/listing')
+  @UseGuards(AuthGuard)
+  async deleteListing(
+    @Body(new ZodValidationPipe(deleteIncExpListingSchema))
+    deleteIncExpListingDto: deleteIncExpListingDto,
+    @Res() res: FastifyReply,
+  ) {
+    const deletedListing = await this.moneyService.deleteListPerDay(
+      deleteIncExpListingDto.listingId,
+    );
+
+    const response: TApiResponse<TIncExpList> = {
+      ok: true,
+      message: 'Successfully delete listing for the day',
+      statusCode: 200,
+      data: deletedListing,
     };
 
     res.status(response.statusCode).send(response);

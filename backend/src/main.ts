@@ -22,6 +22,7 @@ async function bootstrap() {
   await fastifyInstance.register(fastifyCors, {
     origin: ['http://localhost:5173', 'http://localhost:7777'],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
   });
 
   await fastifyInstance.register(fastifyCookie, {

@@ -23,14 +23,26 @@ export type TIncExpDateId = Omit<
 >;
 
 export type TListingEntriesComb = {
-  id: string;
-  listingId: string;
-  userId: string | null;
-  date: string;
-  totalSpent: number;
-  totalEarned: number;
-  action: string;
-  time: string;
-  spentOrEarned: number;
-  isSpent: boolean;
-}[];
+  entry: {
+    id: string;
+    date: string;
+    totalSpent: number;
+    totalEarned: number;
+    netTotal: number;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+    userId: string | null;
+  };
+  listings: {
+    id: string;
+    time: string;
+    action: string;
+    spentOrEarned: number;
+    isSpent: boolean;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+    moneyDailyId: string | null;
+  }[];
+};
+
+export type TDeleteListing = TIncExpList & { entryEmpty: boolean };

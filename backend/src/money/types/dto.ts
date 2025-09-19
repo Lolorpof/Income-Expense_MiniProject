@@ -16,3 +16,9 @@ export const createIncExpListingSchema = z.object({
 });
 
 export type createIncExpListingDto = z.infer<typeof createIncExpListingSchema>;
+
+export const deleteIncExpListingSchema = z.object({
+  listingId: z.string(),
+});
+
+export type deleteIncExpListingDto = z.infer<typeof deleteIncExpListingSchema>;

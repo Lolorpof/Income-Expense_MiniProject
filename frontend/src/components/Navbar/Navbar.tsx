@@ -19,68 +19,70 @@ export default function Navbar() {
 
   return (
     <>
-      <div className="flex flex-row flex-wrap p-2 m-2 gap-4 justify-end">
-        {isLoading ? (
-          <>
-            <Spinner size={28} />
-          </>
-        ) : (
-          <>
-            <LinkButton isActive={!!isHome}>
-              <Link
-                to="/"
-                disabled={!!isHome}
-                onClick={() => {
-                  if (currentUser && !currentUser.ok) {
-                    toast.error("You aren't logged in yet.", {
-                      closeButton: true,
-                      richColors: true,
-                      position: "top-center",
-                    });
-                  }
-                }}
-              >
-                Home
-              </Link>
-            </LinkButton>
+      <div className="sticky top-0">
+        <div className="flex flex-row bg-gradient-to-br from-purple-600 to-violet-900 flex-wrap p-2 gap-4 justify-end">
+          {isLoading ? (
+            <>
+              <Spinner size={28} />
+            </>
+          ) : (
+            <>
+              <LinkButton isActive={!!isHome}>
+                <Link
+                  to="/"
+                  disabled={!!isHome}
+                  onClick={() => {
+                    if (currentUser && !currentUser.ok) {
+                      toast.error("You aren't logged in yet.", {
+                        closeButton: true,
+                        richColors: true,
+                        position: "top-center",
+                      });
+                    }
+                  }}
+                >
+                  Home
+                </Link>
+              </LinkButton>
 
-            {!currentUser?.ok && (
-              <>
-                <LinkButton isActive={!!isLogin}>
-                  <Link
-                    to="/auth"
-                    search={{ type: "login" }}
-                    disabled={!!isLogin}
-                  >
-                    Login
-                  </Link>
-                </LinkButton>
-                <LinkButton isActive={!!isSignup}>
-                  <Link
-                    to="/auth"
-                    search={{ type: "signup" }}
-                    disabled={!!isSignup}
-                  >
-                    Signup
-                  </Link>
-                </LinkButton>
-              </>
-            )}
-            {currentUser && currentUser.ok && (
-              <>
-                <LinkButton isActive={!!isProfile}>
-                  <Link to="/profile" disabled={!!isProfile}>
-                    {" "}
-                    Profile{" "}
-                  </Link>
-                </LinkButton>
-                <Logout queryClient={queryClient} />
-              </>
-            )}
-          </>
-        )}
+              {!currentUser?.ok && (
+                <>
+                  <LinkButton isActive={!!isLogin}>
+                    <Link
+                      to="/auth"
+                      search={{ type: "login" }}
+                      disabled={!!isLogin}
+                    >
+                      Login
+                    </Link>
+                  </LinkButton>
+                  <LinkButton isActive={!!isSignup}>
+                    <Link
+                      to="/auth"
+                      search={{ type: "signup" }}
+                      disabled={!!isSignup}
+                    >
+                      Signup
+                    </Link>
+                  </LinkButton>
+                </>
+              )}
+              {currentUser && currentUser.ok && (
+                <>
+                  <LinkButton isActive={!!isProfile}>
+                    <Link to="/profile" disabled={!!isProfile}>
+                      {" "}
+                      Profile{" "}
+                    </Link>
+                  </LinkButton>
+                  <Logout queryClient={queryClient} />
+                </>
+              )}
+            </>
+          )}
+        </div>
+        <hr className="sticky border-2 bg-amber-500 border-amber-500" />
       </div>
-      <hr className="border-2 border-b-cyan-700 my-1" />
     </>
   );
 }

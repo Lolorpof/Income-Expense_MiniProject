@@ -8,9 +8,9 @@ import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { DATABASE_CONNECTION } from 'src/database/database.connection';
 import * as schema from './schema';
 import { and, eq } from 'drizzle-orm';
-import dayjs from 'dayjs';
 import { TUser } from 'src/user/types/type';
 import {
+  TDeleteListing,
   TIncExpDaily,
   TIncExpDateId,
   TIncExpList,
@@ -72,29 +72,9 @@ export class MoneyService {
           eq(schema.moneyDailyTable.userId, userId),
         ),
       )
-      .as('entry');
+      .limit(1);
 
-    const listingEntries = await this.database
-      .select({
-        id: entry.id,
-        listingId: schema.moneyListsPerDayTable.id,
-        userId: entry.userId,
-        date: entry.date,
-        totalSpent: entry.totalSpent,
-        totalEarned: entry.totalEarned,
-        action: schema.moneyListsPerDayTable.action,
-        time: schema.moneyListsPerDayTable.time,
-        spentOrEarned: schema.moneyListsPerDayTable.spentOrEarned,
-        isSpent: schema.moneyListsPerDayTable.isSpent,
-      })
-      .from(schema.moneyListsPerDayTable)
-      .innerJoin(
-        entry,
-        eq(schema.moneyListsPerDayTable.moneyDailyId, entry.id),
-      );
-
-    // no entries existed
-    if (listingEntries.length === 0) {
+    if (!entry[0]) {
       const response: TApiResponse<undefined> = {
         ok: false,
         message: "Entry doesn't existed",
@@ -104,7 +84,25 @@ export class MoneyService {
       throw new BadRequestException(response);
     }
 
-    return listingEntries;
+    const listings = await this.database
+      .select()
+      .from(schema.moneyListsPerDayTable)
+      .where(eq(schema.moneyListsPerDayTable.moneyDailyId, entry[0].id));
+
+    const listingsEntry = { entry: entry[0], listings };
+
+    // no entries existed
+    if (!listingsEntry || !listingsEntry.entry.id) {
+      const response: TApiResponse<undefined> = {
+        ok: false,
+        message: "Listing doesn't existed",
+        statusCode: HttpStatus.BAD_REQUEST,
+        error: 'Bad Request',
+      };
+      throw new BadRequestException(response);
+    }
+
+    return listingsEntry;
   }
 
   async createIncExpDaily(
@@ -156,7 +154,7 @@ export class MoneyService {
     if (checkEntry && checkEntry.length === 0) {
       const response: TApiResponse<undefined> = {
         ok: false,
-        message: "Entry for Day doesn't existed",
+        message: "Entry for the Day doesn't existed",
         statusCode: HttpStatus.BAD_REQUEST,
         error: 'Bad Request',
       };
@@ -175,6 +173,96 @@ export class MoneyService {
       })
       .returning();
 
-    return createdListForDay[0];
+    // update total in entry of day
+    const curEntry = checkEntry[0];
+    const curListing = createdListForDay[0];
+    const newTotalSpent = curListing.isSpent
+      ? curEntry.totalSpent + -1 * curListing.spentOrEarned
+      : curEntry.totalSpent;
+    const newTotalEarned = curListing.isSpent
+      ? curEntry.totalEarned
+      : curEntry.totalEarned + curListing.spentOrEarned;
+    const newNetTotal = newTotalEarned - newTotalSpent;
+    await this.database.update(schema.moneyDailyTable).set({
+      totalSpent: newTotalSpent,
+      totalEarned: newTotalEarned,
+      netTotal: newNetTotal,
+    });
+
+    return curListing;
+  }
+
+  async deleteListPerDay(listingId: string): Promise<TDeleteListing> {
+    // delete listing from db
+    const deletedListing = await this.database
+      .delete(schema.moneyListsPerDayTable)
+      .where(eq(schema.moneyListsPerDayTable.id, listingId))
+      .returning();
+
+    // nothing is deleted or no Id
+    if (
+      !deletedListing ||
+      deletedListing.length === 0 ||
+      !deletedListing[0].moneyDailyId
+    ) {
+      const response: TApiResponse<undefined> = {
+        ok: false,
+        message: "Listing doesn't existed",
+        statusCode: HttpStatus.BAD_REQUEST,
+        error: 'Bad Request',
+      };
+      throw new BadRequestException(response);
+    }
+
+    // check if entry still have listings left
+    const listings = await this.database
+      .select()
+      .from(schema.moneyListsPerDayTable)
+      .where(
+        eq(
+          schema.moneyListsPerDayTable.moneyDailyId,
+          deletedListing[0].moneyDailyId,
+        ),
+      )
+      .limit(1);
+
+    // no listings left after delete, delete entry for day
+    if (!listings || listings.length === 0) {
+      await this.database
+        .delete(schema.moneyDailyTable)
+        .where(eq(schema.moneyDailyTable.id, deletedListing[0].moneyDailyId));
+    }
+
+    // listings still existed, update total of entry for day
+    const goneListing = deletedListing[0];
+    if (listings.length && goneListing.moneyDailyId) {
+      const entry = await this.database
+        .select()
+        .from(schema.moneyDailyTable)
+        .where(eq(schema.moneyDailyTable.id, goneListing.moneyDailyId));
+      const curEntry = entry[0];
+      const newTotalSpent = goneListing.isSpent
+        ? curEntry.totalSpent + goneListing.spentOrEarned // spent is stored as (-) in listing, so -(-) is +
+        : curEntry.totalSpent;
+      const newTotalEarned = goneListing.isSpent
+        ? curEntry.totalEarned
+        : curEntry.totalEarned - goneListing.spentOrEarned;
+      const newNetTotal = newTotalEarned - newTotalSpent;
+      await this.database
+        .update(schema.moneyDailyTable)
+        .set({
+          totalSpent: newTotalSpent,
+          totalEarned: newTotalEarned,
+          netTotal: newNetTotal,
+        })
+        .where(eq(schema.moneyDailyTable.id, goneListing.moneyDailyId));
+    }
+
+    const res = {
+      entryEmpty: listings.length === 0 ? true : false,
+      ...deletedListing[0],
+    };
+
+    return res;
   }
 }

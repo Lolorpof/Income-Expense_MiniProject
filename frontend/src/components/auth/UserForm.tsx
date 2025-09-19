@@ -54,16 +54,19 @@ export default function UserForm({
 
   return (
     <>
-      <div className="text-4xl my-4 font-bold">
+      <div className="text-4xl my-4 text-amber-500 font-bold">
         {type === "login" ? "Login" : "Signup"}
       </div>
       <div className="my-2">
-        <label className="text-2xl" title="username">
+        <label
+          className="font-semibold text-amber-300 text-2xl"
+          title="username"
+        >
           Username
         </label>
         <br />
         <Input
-          className="w-full h-[4dvh] text-xl"
+          className="w-full h-[4dvh] text-white text-xl placeholder-amber-100/80"
           name="username"
           value={username}
           type="text"
@@ -72,12 +75,15 @@ export default function UserForm({
         />
       </div>
       <div className="my-2">
-        <label className="text-2xl" title="password">
+        <label
+          className="font-semibold text-amber-300 text-2xl"
+          title="password"
+        >
           Password
         </label>
         <br />
         <Input
-          className="w-full h-[4dvh] text-xl"
+          className="w-full h-[4dvh] text-white text-xl placeholder-amber-100/80"
           name="password"
           value={password}
           type={isChecked ? "text" : "password"}
@@ -87,7 +93,7 @@ export default function UserForm({
       </div>
       <div className="flex justify-end">
         <div className="flex mx-2 py-1">
-          <span>Show Password</span>
+          <span className="text-white text-lg">Show Password</span>
         </div>
         <Input
           className="shadow-none w-fit"
@@ -100,7 +106,7 @@ export default function UserForm({
 
       <div className="my-2 flex items-end justify-center">
         <Button
-          className="text-2xl p-2.5 my-2 h-fit bg-green-600 hover:cursor-pointer"
+          className="text-2xl p-2.5 my-2 h-fit min-w-full bg-green-600 hover:cursor-pointer"
           variant={"default"}
           title="login"
           type="submit"

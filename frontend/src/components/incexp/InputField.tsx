@@ -8,6 +8,8 @@ import {
 } from "../ui/select";
 
 export default function InputField<T>({
+  inputClassName,
+  selectClassName,
   type,
   title,
   placeholder,
@@ -17,6 +19,8 @@ export default function InputField<T>({
   symbolValue,
   changeSymbolStateFn,
 }: {
+  inputClassName?: string;
+  selectClassName?: string;
   type?: React.HTMLInputTypeAttribute;
   title: string;
   placeholder?: string;
@@ -41,7 +45,7 @@ export default function InputField<T>({
               <SelectTrigger className="w-fit mt-1 mr-2">
                 <SelectValue placeholder="+ or -" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className={`${selectClassName} `}>
                 <SelectItem value="add">+</SelectItem>
                 <SelectItem value="subtract">-</SelectItem>
               </SelectContent>
@@ -51,6 +55,7 @@ export default function InputField<T>({
           <Input
             type={type}
             className={
+              `${inputClassName} ` +
               "mt-1 " +
               (type === "time"
                 ? "min-w-fit w-fit"
