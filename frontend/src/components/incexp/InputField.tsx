@@ -1,4 +1,5 @@
 import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
 import {
   Select,
   SelectContent,
@@ -34,7 +35,7 @@ export default function InputField<T>({
     <>
       <div className="w-full flex flex-wrap items-center">
         <h3 className="font-bold min-w-full">{title}</h3>
-        <div className="flex">
+        <div className="relative flex">
           {type === "number" && changeSymbolStateFn && symbolValue && (
             <Select
               onValueChange={(value) => {
@@ -51,29 +52,38 @@ export default function InputField<T>({
               </SelectContent>
             </Select>
           )}
-
-          <Input
-            type={type}
-            className={
-              `${inputClassName} ` +
-              "mt-1 " +
-              (type === "time"
-                ? "min-w-fit w-fit"
-                : type === "number"
-                ? "min-w-fit w-fit"
-                : "min-w-full w-full")
-            }
-            placeholder={placeholder}
-            value={
-              type === "number" && value
-                ? Number(value) < 0
-                  ? -1 * Number(value)
+          {type === "text" && (
+            <Textarea
+              className="break-words min-w-sm max-w-md field-sizing-content "
+              placeholder={placeholder}
+              value={value}
+              onChange={(e) => changeStateFn(e.target.value as T)}
+            ></Textarea>
+          )}
+          {type !== "text" && (
+            <Input
+              type={type}
+              className={
+                `${inputClassName} ` +
+                "mt-1 " +
+                (type === "time"
+                  ? "min-w-fit w-fit"
+                  : type === "number"
+                  ? "min-w-fit w-fit"
+                  : "min-w-full w-full")
+              }
+              placeholder={placeholder}
+              value={
+                type === "number" && value
+                  ? Number(value) < 0
+                    ? -1 * Number(value)
+                    : value
                   : value
-                : value
-            }
-            onChange={(e) => changeStateFn(e.target.value as T)}
-            min={0}
-          />
+              }
+              onChange={(e) => changeStateFn(e.target.value as T)}
+              min={0}
+            />
+          )}
           {children}
         </div>
       </div>

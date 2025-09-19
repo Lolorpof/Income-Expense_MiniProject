@@ -150,11 +150,12 @@ export default function AddListDialog({
           <div className="py-4 flex flex-wrap gap-2 text-amber-500">
             <InputField<string>
               key="action"
+              type="text"
               title="Action"
               placeholder="Action of spending/earning money"
               value={action}
               changeStateFn={setAction}
-              inputClassName="placeholder-amber-100/60"
+              inputClassName={`min-w-full max-w-full`}
             />
             <InputField<string>
               key="time"
