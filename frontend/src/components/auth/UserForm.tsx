@@ -106,7 +106,7 @@ export default function UserForm({
 
       <div className="my-2 flex items-end justify-center">
         <Button
-          className="text-2xl p-2.5 my-2 h-fit min-w-full bg-green-600 hover:cursor-pointer"
+          className="text-2xl p-2.5 my-2 h-fit min-w-full bg-purple-500 hover:bg-purple-800 hover:cursor-pointer"
           variant={"default"}
           title="login"
           type="submit"

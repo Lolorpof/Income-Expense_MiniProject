@@ -183,11 +183,14 @@ export class MoneyService {
       ? curEntry.totalEarned
       : curEntry.totalEarned + curListing.spentOrEarned;
     const newNetTotal = newTotalEarned - newTotalSpent;
-    await this.database.update(schema.moneyDailyTable).set({
-      totalSpent: newTotalSpent,
-      totalEarned: newTotalEarned,
-      netTotal: newNetTotal,
-    });
+    await this.database
+      .update(schema.moneyDailyTable)
+      .set({
+        totalSpent: newTotalSpent,
+        totalEarned: newTotalEarned,
+        netTotal: newNetTotal,
+      })
+      .where(eq(schema.moneyDailyTable.id, curEntry.id));
 
     return curListing;
   }

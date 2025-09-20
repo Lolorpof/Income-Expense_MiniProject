@@ -11,17 +11,20 @@ import { Spinner } from "../ui/spinner";
 import dayjs from "dayjs";
 
 export default function Calendar({
+  prevDateState,
   currentUser,
   queryClient,
 }: {
+  prevDateState?: string;
   currentUser: TUser;
   queryClient: QueryClient;
 }) {
   const currentDate = new Date();
+  const prevDate = prevDateState ? dayjs(prevDateState).toDate() : undefined;
   const [dir, setDir] = useState(0);
   const [calendarState, setCalendarState] = useState(() => ({
-    month: currentDate.getMonth(),
-    year: currentDate.getFullYear(),
+    month: prevDate ? prevDate.getMonth() : currentDate.getMonth(),
+    year: prevDate ? prevDate.getFullYear() : currentDate.getFullYear(),
   }));
 
   const [currentMonthFirstDateDay, setCurrentMonthFirstDateDay] = useState(

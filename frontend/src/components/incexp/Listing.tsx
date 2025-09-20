@@ -2,9 +2,9 @@ import { deleteListing } from "@/fetching/raws/deleteListingRaw";
 import type { TListingEntriesComb } from "@/types/money.type";
 import { useMutation, type QueryClient } from "@tanstack/react-query";
 import { TrashIcon } from "lucide-react";
-import { useEffect, useState } from "react";
 import EditListDialog from "./EditListDialog";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 export default function Listing({
   className,
@@ -39,16 +39,21 @@ export default function Listing({
 
   return (
     <>
-      <div
+      <motion.div
+        key={entryList.id}
         className={`mb-3 mx-4 rounded-md ${
           entryList.isSpent
             ? "bg-gradient-to-bl from-violet-700 to-purple-800"
             : "bg-gradient-to-tr from-violet-700 to-purple-800"
         }`}
+        initial={{ opacity: 0, y: -100 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -100 }}
+        transition={{ duration: 0.25, ease: ["easeOut"] }}
       >
         <div className="flex w-full h-fit mb-3">
           <TrashIcon
-            className={`relative top-2 left-2 p-2 rounded-[100%] bg-red-600 hover:bg-red-800 hover:scale-120 text-white shadow-black/40 shadow-lg ${
+            className={`relative top-2 left-2 p-2 rounded-[100%] bg-red-600 hover:bg-red-800 hover:scale-120 text-white shadow-black/40 shadow-lg duration-150 ${
               isPending ? "cursor-progress" : "hover:cursor-pointer"
             }`}
             size={40}
@@ -103,7 +108,7 @@ export default function Listing({
               : entryList.spentOrEarned}
           </span>
         </div>
-      </div>
+      </motion.div>
     </>
   );
 }

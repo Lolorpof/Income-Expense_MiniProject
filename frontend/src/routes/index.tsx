@@ -12,6 +12,7 @@ export const Route = createFileRoute("/")({
     const { data: currentUser, isLoading, error } = useQuery(getCurrentUser);
     const navigate = useNavigate();
     const { queryClient }: TRouterContext = Route.useRouteContext();
+    const { date } = Route.useSearch();
 
     if (currentUser && !currentUser.ok) {
       navigate({ to: "/auth", search: { type: "login" } });
@@ -30,6 +31,7 @@ export const Route = createFileRoute("/")({
         <>
           <Calendar
             key={currentUser.data.id}
+            prevDateState={date && date !== "" ? date : undefined}
             currentUser={currentUser.data}
             queryClient={queryClient}
           />

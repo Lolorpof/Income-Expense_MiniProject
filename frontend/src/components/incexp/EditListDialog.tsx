@@ -81,7 +81,7 @@ export default function EditListDialog({
       <Dialog>
         <DialogTrigger asChild>
           <EditIcon
-            className={`relative top-2 left-5 p-1.5 rounded-[100%] bg-amber-500 hover:bg-amber-700 hover:scale-120 text-white ${
+            className={`relative top-2 left-5 p-1.5 rounded-[100%] bg-amber-500 hover:bg-amber-700 hover:scale-120 text-white duration-150 ${
               isPending ? "cursor-progress" : "hover:cursor-pointer"
             }`}
             size={40}

@@ -48,6 +48,8 @@ export default function AddListDialog({
   const [actionSymbol, setActionSymbol] = useState("add");
   const [amount, setAmount] = useState(0);
 
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   const { mutate: dayEntryMutate, isPending: dayEntryPending } = useMutation({
     mutationKey: ["create", date],
     mutationFn: () => {
@@ -135,9 +137,11 @@ export default function AddListDialog({
 
   return (
     <>
-      <Dialog>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>
-          <LucidePlus className="rounded-[100%] size-[4dvh] aspect-square absolute mt-[1%] ml-[1%] bg-purple-600 hover:cursor-pointer hover:bg-purple-600/70 hover:scale-115 text-white duration-200" />
+          <div hidden={dialogOpen}>
+            <LucidePlus className="absolute bottom-16 left-16 rounded-[100%] size-[6dvh] aspect-square mt-[1%] ml-[1%] bg-purple-600 hover:cursor-pointer hover:bg-purple-600/70 hover:scale-125 text-white duration-200" />
+          </div>
         </DialogTrigger>
         <DialogContent className="bg-black/70 border-amber-500">
           <DialogHeader>
