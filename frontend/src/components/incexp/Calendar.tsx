@@ -3,7 +3,7 @@ import { ChevronRightIcon, ChevronLeftIcon } from "lucide-react";
 import "./calendar.css";
 import { days, months } from "@/utils/calendar/calendar.util";
 import type { TUser } from "@/types/user.type";
-import { useQuery, type QueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import EachDate from "./EachDate";
 import { getAllEntriesDateIdByUserId } from "@/fetching/queries/getAllEntriesDateIdByUserId";
@@ -13,11 +13,9 @@ import dayjs from "dayjs";
 export default function Calendar({
   prevDateState,
   currentUser,
-  queryClient,
 }: {
   prevDateState?: string;
   currentUser: TUser;
-  queryClient: QueryClient;
 }) {
   const currentDate = new Date();
   const prevDate = prevDateState ? dayjs(prevDateState).toDate() : undefined;
@@ -164,7 +162,6 @@ export default function Calendar({
                             : `0${calendarState.month + 1}`
                         }-${i + 1 >= 10 ? i + 1 : `0${i + 1}`}`
                     )}
-                    queryClient={queryClient}
                   />
                 ))}
               </motion.div>

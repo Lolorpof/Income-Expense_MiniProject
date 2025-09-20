@@ -1,5 +1,5 @@
 import type { TApiResponse } from "@/types/api.type";
-import type { TIncExpDaily, TListingEntriesComb } from "@/types/money.type";
+import type { TListingEntriesComb } from "@/types/money.type";
 import { backendURL } from "@/utils/fetchingEndpoint";
 
 export const getEntryByDateRaw = async (date: string) => {

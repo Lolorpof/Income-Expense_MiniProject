@@ -8,15 +8,10 @@ import {
   DialogDescription,
   DialogFooter,
 } from "../ui/dialog";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import InputField from "./InputField";
 import { Button } from "../ui/button";
-import {
-  QueryClient,
-  useMutation,
-  type QueryObserverResult,
-  type RefetchOptions,
-} from "@tanstack/react-query";
+import { QueryClient, useMutation } from "@tanstack/react-query";
 import { createEntryRaw } from "@/fetching/raws/createEntryRaw";
 import type { TListingEntriesComb } from "@/types/money.type";
 import type { TApiResponse } from "@/types/api.type";
@@ -32,15 +27,11 @@ export default function AddListDialog({
   date,
   displayDate,
   entry,
-  entryRefetch,
   queryClient,
 }: {
   date: string;
   displayDate: string;
   entry: TApiResponse<TListingEntriesComb>;
-  entryRefetch: (
-    options?: RefetchOptions | undefined
-  ) => Promise<QueryObserverResult<TApiResponse<TListingEntriesComb>, Error>>;
   queryClient: QueryClient;
 }) {
   const [action, setAction] = useState("");

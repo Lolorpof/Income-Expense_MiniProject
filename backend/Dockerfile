@@ -1,10 +1,12 @@
 FROM node:22-alpine AS build
 WORKDIR /app
+RUN npm install -g pnpm
 COPY package*.json .
-RUN npm install 
+COPY pnpm-lock.yaml .
+RUN pnpm install --frozen-lockfile
 COPY . .
-RUN npm run build
-RUN npm prune --omit=dev
+RUN pnpm run build
+RUN pnpm prune --omit=dev
 
 FROM node:22-alpine AS prod
 WORKDIR /app

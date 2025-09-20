@@ -4,14 +4,11 @@ import { getCurrentUser } from "../fetching/queries/getCurrentUser";
 import { useQuery } from "@tanstack/react-query";
 import { Spinner } from "@/components/ui/spinner";
 import Calendar from "@/components/incexp/Calendar";
-import type { TRouterContext } from "@/types/route.type";
-import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
   component: () => {
     const { data: currentUser, isLoading, error } = useQuery(getCurrentUser);
     const navigate = useNavigate();
-    const { queryClient }: TRouterContext = Route.useRouteContext();
     const { date } = Route.useSearch();
 
     if (currentUser && !currentUser.ok) {
@@ -33,7 +30,6 @@ export const Route = createFileRoute("/")({
             key={currentUser.data.id}
             prevDateState={date && date !== "" ? date : undefined}
             currentUser={currentUser.data}
-            queryClient={queryClient}
           />
         </>
       )

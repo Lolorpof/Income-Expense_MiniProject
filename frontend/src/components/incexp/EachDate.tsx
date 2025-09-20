@@ -1,8 +1,5 @@
-import { createEntryRaw } from "@/fetching/raws/createEntryRaw";
 import type { TIncExpDateId } from "@/types/money.type";
-import { useMutation, type QueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { Spinner } from "../ui/spinner";
 
 export default function EachDate({
   day,
@@ -10,14 +7,12 @@ export default function EachDate({
   currentMonth,
   currentYear,
   entry,
-  queryClient,
 }: {
   day: number;
   currentDate: Date;
   currentMonth: number;
   currentYear: number;
   entry?: TIncExpDateId;
-  queryClient: QueryClient;
 }) {
   const navigate = useNavigate();
 

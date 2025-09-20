@@ -21,11 +21,7 @@ function RouteComponent() {
   const { queryClient }: TRouterContext = Route.useRouteContext();
   const navigate = Route.useNavigate();
 
-  const {
-    data: entry,
-    refetch: entryRefetch,
-    isLoading,
-  } = useQuery(getEntryByDate(date));
+  const { data: entry, isLoading } = useQuery(getEntryByDate(date));
 
   const [oldSpent, setOldSpent] = useState(
     entry && entry.ok ? entry.data.entry.totalSpent : 0
@@ -59,7 +55,6 @@ function RouteComponent() {
           date={date}
           displayDate={displayDate}
           entry={entry}
-          entryRefetch={entryRefetch}
           queryClient={queryClient}
         />
         <div className="relative w-fit min-w-[60%] max-w-[90%] h-fit my-10 rounded-lg border-6 border-amber-600 bg-white/5 justify-center">
