@@ -5,7 +5,7 @@ COPY package*.json .
 COPY pnpm-lock.yaml .
 RUN pnpm install --frozen-lockfile 
 COPY . .
-RUN pnpm run dev:build
+RUN pnpm run build
 
 FROM nginx:1.29.1-alpine AS prod 
 COPY ./nginx.conf.template /etc/nginx/templates/nginx.conf.template

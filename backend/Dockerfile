@@ -6,7 +6,7 @@ COPY pnpm-lock.yaml .
 RUN pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm run build
-RUN pnpm prune --omit=dev
+RUN pnpm prune --prod
 
 FROM node:22-alpine AS prod
 WORKDIR /app
