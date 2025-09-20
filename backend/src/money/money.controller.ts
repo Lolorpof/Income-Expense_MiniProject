@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Req,
   Res,
   UseGuards,
@@ -20,6 +21,8 @@ import {
   createIncExpListingSchema,
   deleteIncExpListingDto,
   deleteIncExpListingSchema,
+  editIncExpListDto,
+  editIncExpListSchema,
 } from './types/dto';
 import { ZodValidationPipe } from 'src/utils/zod/validation.pipe';
 import { MoneyService } from './money.service';
@@ -111,6 +114,30 @@ export class MoneyController {
       message: 'Successfully insert listing into day entry',
       statusCode: 201,
       data: createdListForDay,
+    };
+
+    res.status(response.statusCode).send(response);
+  }
+
+  @Put('auth/edit/listing')
+  @UseGuards(AuthGuard)
+  async editListing(
+    @Body(new ZodValidationPipe(editIncExpListSchema))
+    editIncExpListDto: editIncExpListDto,
+    @Res() res: FastifyReply,
+  ) {
+    const edittedListing = await this.moneyService.editListPerDay(
+      editIncExpListDto.listingId,
+      editIncExpListDto.action,
+      editIncExpListDto.time,
+      editIncExpListDto.spentOrEarned,
+    );
+
+    const response: TApiResponse<TIncExpList> = {
+      ok: true,
+      message: 'Successfully editted listing for the day',
+      statusCode: 200,
+      data: edittedListing,
     };
 
     res.status(response.statusCode).send(response);

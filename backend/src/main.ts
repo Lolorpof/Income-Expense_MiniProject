@@ -33,7 +33,7 @@ async function bootstrap() {
     secret: process.env.SESSION_SECRET as string,
     saveUninitialized: false,
     cookieName: process.env.COOKIE_NAME as string,
-    cookie: { secure: false, maxAge: Number(process.env.SESSION_DEV_AGE) },
+    cookie: { secure: false, maxAge: Number(process.env.SESSION_REAL_AGE) },
     store: new PgSessionStore({
       pool: pool,
       tableName: 'user_session',

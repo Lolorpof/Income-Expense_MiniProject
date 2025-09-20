@@ -35,7 +35,7 @@ export default function InputField<T>({
     <>
       <div className="w-full flex flex-wrap items-center">
         <h3 className="font-bold min-w-full">{title}</h3>
-        <div className="relative flex">
+        <div className="relative flex w-full">
           {type === "number" && changeSymbolStateFn && symbolValue && (
             <Select
               onValueChange={(value) => {
@@ -54,7 +54,7 @@ export default function InputField<T>({
           )}
           {type === "text" && (
             <Textarea
-              className="break-words min-w-sm max-w-md field-sizing-content "
+              className="break-words placeholder-amber-100/60"
               placeholder={placeholder}
               value={value}
               onChange={(e) => changeStateFn(e.target.value as T)}

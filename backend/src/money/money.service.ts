@@ -192,6 +192,94 @@ export class MoneyService {
     return curListing;
   }
 
+  async editListPerDay(
+    listingId: string,
+    action: string,
+    time: string,
+    spentOrEarned: number,
+  ): Promise<TIncExpList> {
+    // get old listing info
+    const oldListings = await this.database
+      .select({
+        action: schema.moneyListsPerDayTable.action,
+        time: schema.moneyListsPerDayTable.time,
+        spentOrEarned: schema.moneyListsPerDayTable.spentOrEarned,
+        isSpent: schema.moneyListsPerDayTable.isSpent,
+      })
+      .from(schema.moneyListsPerDayTable)
+      .where(eq(schema.moneyListsPerDayTable.id, listingId))
+      .limit(1);
+
+    // edit in listing
+    const edittedListing = await this.database
+      .update(schema.moneyListsPerDayTable)
+      .set({
+        action: action,
+        spentOrEarned: spentOrEarned,
+        time: time,
+        isSpent: spentOrEarned < 0 ? true : false,
+      })
+      .where(eq(schema.moneyListsPerDayTable.id, listingId))
+      .returning();
+
+    // the updated listing doesn't existed
+    if (
+      !oldListings ||
+      oldListings.length === 0 ||
+      !edittedListing ||
+      edittedListing.length === 0 ||
+      !edittedListing[0].moneyDailyId
+    ) {
+      const response: TApiResponse<undefined> = {
+        ok: false,
+        statusCode: 400,
+        message: "Entry for the Day doesn't existed",
+        error: 'Bad Request',
+      };
+      throw new BadRequestException(response);
+    }
+
+    // update the total amount on entry
+    const entry = await this.database
+      .select()
+      .from(schema.moneyDailyTable)
+      .where(eq(schema.moneyDailyTable.id, edittedListing[0].moneyDailyId))
+      .limit(1);
+    const oldListing = oldListings[0];
+    const curListing = edittedListing[0];
+    const curEntry = entry[0];
+    /*
+      algor. is
+      subtract old if it is the correct type
+      add new if it is the correct type
+    */
+    var newTotalSpent = curEntry.totalSpent;
+    newTotalSpent = oldListing.isSpent
+      ? newTotalSpent - -1 * oldListing.spentOrEarned
+      : newTotalSpent;
+    newTotalSpent = curListing.isSpent
+      ? newTotalSpent + -1 * curListing.spentOrEarned
+      : newTotalSpent;
+    var newTotalEarned = curEntry.totalEarned;
+    newTotalEarned = oldListing.isSpent
+      ? newTotalEarned
+      : newTotalEarned - oldListing.spentOrEarned;
+    newTotalEarned = curListing.isSpent
+      ? newTotalEarned
+      : newTotalEarned + curListing.spentOrEarned;
+    const newNetTotal = newTotalEarned - newTotalSpent;
+    await this.database
+      .update(schema.moneyDailyTable)
+      .set({
+        totalSpent: newTotalSpent,
+        totalEarned: newTotalEarned,
+        netTotal: newNetTotal,
+      })
+      .where(eq(schema.moneyDailyTable.id, curEntry.id));
+
+    return curListing;
+  }
+
   async deleteListPerDay(listingId: string): Promise<TDeleteListing> {
     // delete listing from db
     const deletedListing = await this.database

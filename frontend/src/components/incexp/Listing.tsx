@@ -2,14 +2,19 @@ import { deleteListing } from "@/fetching/raws/deleteListingRaw";
 import type { TListingEntriesComb } from "@/types/money.type";
 import { useMutation, type QueryClient } from "@tanstack/react-query";
 import { TrashIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import EditListDialog from "./EditListDialog";
+import { toast } from "sonner";
 
 export default function Listing({
   className,
+  displayDate,
   entryDate,
   entryList,
   queryClient,
 }: {
   className: string;
+  displayDate: string;
   entryDate: string;
   entryList: TListingEntriesComb["listings"][0];
   queryClient: QueryClient;
@@ -20,13 +25,18 @@ export default function Listing({
     onSuccess: async (data) => {
       await queryClient.invalidateQueries({ queryKey: ["entry", entryDate] });
       // entry for day is empty with no listing, refetch all entries
-      console.log(data);
       if (data.ok && data.data.entryEmpty) {
-        console.log(`is entry empty? ${data.data.entryEmpty}`);
         await queryClient.invalidateQueries({ queryKey: ["allEntries"] });
       }
+
+      toast.success("Successfully delete listing!", {
+        richColors: true,
+        closeButton: true,
+        position: "top-center",
+      });
     },
   });
+
   return (
     <>
       <div
@@ -36,15 +46,25 @@ export default function Listing({
             : "bg-gradient-to-tr from-violet-700 to-purple-800"
         }`}
       >
-        <div className="w-full h-fit mb-3">
+        <div className="flex w-full h-fit mb-3">
           <TrashIcon
-            className={`relative top-2 left-2 p-2 rounded-4xl bg-red-600 text-white shadow-black/40 shadow-lg ${
+            className={`relative top-2 left-2 p-2 rounded-[100%] bg-red-600 hover:bg-red-800 hover:scale-120 text-white shadow-black/40 shadow-lg ${
               isPending ? "cursor-progress" : "hover:cursor-pointer"
             }`}
             size={40}
             onClick={() => mutate()}
             aria-disabled={isPending}
           />
+          <EditListDialog
+            date={entryDate}
+            listingId={entryList.id}
+            displayDate={displayDate}
+            curAction={entryList.action}
+            curTime={entryList.time}
+            curAmount={entryList.spentOrEarned}
+            isSpent={entryList.isSpent}
+            queryClient={queryClient}
+          ></EditListDialog>
         </div>
         <div className={`${className} grid grid-cols-3 p-2  `}>
           <span className="rounded-md text-center px-2 py-1 mx-2 text-lg font-bold bg-gray-950 text-amber-600">

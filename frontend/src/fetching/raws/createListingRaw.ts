@@ -5,7 +5,7 @@ import type {
 } from "@/types/money.type";
 import { backendURL } from "@/utils/fetchingEndpoint";
 
-export const createListChild = async (
+export const createListing = async (
   insertListingForm: TInsertListingDayForm
 ) => {
   const response: TApiResponse<TCreatedEntryForDate> = await (

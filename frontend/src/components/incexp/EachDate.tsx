@@ -54,7 +54,7 @@ export default function EachDate({
             (day + 1 === currentDate.getDate() &&
             currentMonth === currentDate.getMonth() &&
             currentYear === currentDate.getFullYear()
-              ? " px-1 py-0.5 rounded-4xl bg-amber-500 text-violet-800 font-bold"
+              ? " px-1 py-0.5 rounded-4xl bg-amber-500 text-violet-800 shadow-purple-300/70 shadow-md font-bold"
               : " font-semibold")
           }
         >

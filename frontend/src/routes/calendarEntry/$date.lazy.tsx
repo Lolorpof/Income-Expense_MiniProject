@@ -67,6 +67,7 @@ function RouteComponent() {
                       {entry.data.listings.map((listings) => (
                         <Listing
                           key={listings.id}
+                          displayDate={displayDate}
                           entryDate={entry.data.entry.date}
                           entryList={listings}
                           queryClient={queryClient}

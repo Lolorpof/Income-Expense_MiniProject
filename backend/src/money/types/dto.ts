@@ -22,3 +22,12 @@ export const deleteIncExpListingSchema = z.object({
 });
 
 export type deleteIncExpListingDto = z.infer<typeof deleteIncExpListingSchema>;
+
+export const editIncExpListSchema = z.object({
+  listingId: z.string(),
+  action: z.string(),
+  time: z.string(),
+  spentOrEarned: z.number(),
+});
+
+export type editIncExpListDto = z.infer<typeof editIncExpListSchema>;

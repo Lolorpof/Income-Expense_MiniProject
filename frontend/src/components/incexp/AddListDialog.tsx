@@ -20,7 +20,7 @@ import {
 import { createEntryRaw } from "@/fetching/raws/createEntryRaw";
 import type { TListingEntriesComb } from "@/types/money.type";
 import type { TApiResponse } from "@/types/api.type";
-import { createListChild } from "@/fetching/raws/createListChildRaw";
+import { createListing } from "@/fetching/raws/createListingRaw";
 import { toast } from "sonner";
 import { ListingSchema } from "@/utils/zod/schema";
 import { fromError } from "zod-validation-error";
@@ -89,10 +89,15 @@ export default function AddListDialog({
 
   const { mutate: listingMutate, isPending: listingPending } = useMutation({
     mutationKey: ["create", action, time],
-    mutationFn: createListChild,
+    mutationFn: createListing,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["entry", date] });
       await queryClient.invalidateQueries({ queryKey: ["allEntries"] });
+      toast.success("Successfully create listing!", {
+        richColors: true,
+        closeButton: true,
+        position: "top-center",
+      });
     },
   });
   // debug InputField component
@@ -147,7 +152,7 @@ export default function AddListDialog({
               </span>
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4 flex flex-wrap gap-2 text-amber-500">
+          <div className="py-4 flex flex-wrap w-full gap-2 text-amber-500">
             <InputField<string>
               key="action"
               type="text"
@@ -155,7 +160,6 @@ export default function AddListDialog({
               placeholder="Action of spending/earning money"
               value={action}
               changeStateFn={setAction}
-              inputClassName={`min-w-full max-w-full`}
             />
             <InputField<string>
               key="time"
@@ -180,7 +184,7 @@ export default function AddListDialog({
           </div>
           <div className="w-full h-full justify-end">
             <Button
-              className=" bg-emerald-500 hover:bg-emerald-800 text-xl p-4 hover:backdrop-brightness-100 hover:cursor-pointer duration-200"
+              className=" bg-purple-500 hover:bg-purple-800 text-xl p-4 hover:backdrop-brightness-100 hover:cursor-pointer duration-200"
               onClick={clickAddListing}
               disabled={
                 action === "" ||
