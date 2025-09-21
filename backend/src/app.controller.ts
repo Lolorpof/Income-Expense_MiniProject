@@ -3,8 +3,15 @@ import { FastifyReply } from 'fastify';
 
 @Controller()
 export class AppController {
-  @Get()
+  @Get('health')
   index(@Res() res: FastifyReply) {
-    res.status(400).send({ message: 'Hello World', statusCode: 400 });
+    res
+      .status(200)
+      .send({
+        status: 'ok',
+        ok: true,
+        message: 'Service is healthy!',
+        statusCode: 200,
+      });
   }
 }

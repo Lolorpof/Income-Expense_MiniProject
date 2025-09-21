@@ -1,0 +1,61 @@
+name: "myproj_incexp"
+services:
+  database:
+    image: postgres:17.6-alpine
+    container_name: incexp_database
+    environment:
+      POSTGRES_USER: ${POSTGRES_SUPER_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_SUPER_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - ${POSTGRES_MAP_PORT}:${POSTGRES_PORT}
+    volumes:
+      - database_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U", "postgres"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 5s
+    networks:
+      - the-network
+  backend:
+    container_name: incexp_backend
+    image: incexp_be:test
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+    env_file:
+      - .env
+    volumes:
+      - init:/app/.init
+    networks:
+      - the-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:6900/api/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 5s
+    depends_on:
+      database:
+        condition: service_healthy
+  frontend:
+    container_name: incexp_frontend
+    image: incexp_fe:test
+    ports:
+      - "${FRONTEND_MAP_PORT}:${NGINX_PORT}"
+    environment:
+      - NGINX_PORT=${NGINX_PORT}
+      - NGINX_BACKEND_PROXY=${NGINX_BACKEND_PROXY}
+    networks:
+      - the-network
+    depends_on:
+      database:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+networks:
+  the-network:
+volumes:
+  database_data:
+  init:
