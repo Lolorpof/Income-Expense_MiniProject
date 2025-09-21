@@ -7,8 +7,8 @@ INIT_FLAG_FILE="/app/.init/initialized"
 mkdir -p /app/.init
 
 # Setup environment is in temp(the unbuild backend)
-cd /app/temp
 if [ ! -f "$INIT_FLAG_FILE" ]; then
+    cd /app/temp
     echo "First time initialization..."
     
     # Set database host for Docker environment
@@ -52,6 +52,9 @@ EOF
     # Create flag file to indicate initialization is done
     touch "$INIT_FLAG_FILE"
     echo "Initialization complete."
+    # change back the directory
+    cd /app
+    rm -rf /app/temp
 else
     echo "System already initialized, skipping setup..."
     # Still need to set these for the application
@@ -59,8 +62,5 @@ else
     export POSTGRES_PORT=5432
 fi
 
-# change back the directory
-cd /app
-rm -rf /app/temp
 echo "Starting application..."
 exec "$@"
