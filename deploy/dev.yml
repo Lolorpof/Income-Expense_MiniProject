@@ -1,8 +1,10 @@
-name: "myproj_incexp"
+# Don't forget to change {fetchingEndpoint.ts} in frontend to fetch to backend directly via docker-network for this dev. deployment
+
+name: "dev_incexp"
 services:
   database:
     image: postgres:17.6-alpine
-    container_name: incexp_database
+    container_name: dev_incexp_database
     environment:
       POSTGRES_USER: ${POSTGRES_SUPER_USER}
       POSTGRES_PASSWORD: ${POSTGRES_SUPER_PASSWORD}
@@ -18,18 +20,24 @@ services:
       retries: 5
       start_period: 5s
     networks:
-      - the-network
+      - dev-network
+
   backend:
-    container_name: incexp_backend
-    image: incexp_be:test
+    build:
+      context: ../backend
+      dockerfile: Dev_Dockerfile
+    container_name: dev_incexp_backend
     ports:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
     env_file:
       - .env
     volumes:
       - init:/app/.init
+      - ../backend:/app # mapped backend dir to /app
+      - /app/node_modules # prevent overriding
+      - /app/scripts
     networks:
-      - the-network
+      - dev-network
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:6900/api/health || exit 1"]
       interval: 15s
@@ -39,23 +47,26 @@ services:
     depends_on:
       database:
         condition: service_healthy
+
   frontend:
-    container_name: incexp_frontend
-    image: incexp_fe:test
+    build:
+      context: ../frontend
+      dockerfile: Dev_Dockerfile
+    container_name: dev_incexp_frontend
     ports:
-      - "${FRONTEND_MAP_PORT}:${NGINX_PORT}"
-    environment:
-      - NGINX_PORT=${NGINX_PORT}
-      - NGINX_BACKEND_PROXY=${NGINX_BACKEND_PROXY}
+      - "${FRONTEND_MAP_PORT}:5173"
+    volumes:
+      - ../frontend:/app # mapped frontend dir to /app
+      - /app/node_modules # prevent overriding
     networks:
-      - the-network
+      - dev-network
     depends_on:
       database:
         condition: service_healthy
       backend:
         condition: service_healthy
 networks:
-  the-network:
+  dev-network:
 volumes:
   database_data:
   init:

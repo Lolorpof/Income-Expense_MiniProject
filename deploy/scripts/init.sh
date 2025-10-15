@@ -52,7 +52,6 @@ EOF
     # Create flag file to indicate initialization is done
     touch "$INIT_FLAG_FILE"
     echo "Initialization complete."
-
     # change back the directory
     cd /app
     rm -rf /app/temp

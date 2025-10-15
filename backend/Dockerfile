@@ -18,15 +18,15 @@ COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/node_modules ./temp/node_modules
 COPY --from=build /app/drizzle ./temp/drizzle
 COPY --from=build /app/src ./temp/src
-COPY --from=build /app/scripts ./scripts
+COPY --from=build /app/scripts ./temp/scripts
 COPY --from=build /app/.env ./temp
 COPY --from=build /app/drizzle.config.ts ./temp
 COPY --from=build /app/package*.json ./temp
 COPY --from=build /app/pnpm-lock.yaml ./temp
 
 RUN pnpm prune --prod
-RUN dos2unix ./scripts/init.sh
-RUN chmod +x ./scripts/init.sh
+RUN dos2unix ./temp/scripts/init.sh
+RUN chmod +x ./temp/scripts/init.sh
 EXPOSE 6900
-ENTRYPOINT [ "./scripts/init.sh" ]
-CMD ["pnpm", "run", "start:prod"]
+ENTRYPOINT [ "./temp/scripts/init.sh" ]
+CMD ["npm", "run", "start:prod"]
