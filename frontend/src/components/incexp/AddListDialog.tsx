@@ -131,7 +131,7 @@ export default function AddListDialog({
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>
           <div hidden={dialogOpen}>
-            <LucidePlus className="absolute bottom-16 left-16 rounded-[100%] size-[6dvh] aspect-square mt-[1%] ml-[1%] bg-purple-600 hover:cursor-pointer hover:bg-purple-600/70 hover:scale-125 text-white duration-200" />
+            <LucidePlus className="fixed bottom-4 left-4 rounded-[100%] size-[6dvh] aspect-square bg-purple-600 hover:cursor-pointer hover:bg-purple-600/70 hover:scale-125 text-white duration-200 z-50" />
           </div>
         </DialogTrigger>
         <DialogContent className="bg-black/70 border-amber-500">

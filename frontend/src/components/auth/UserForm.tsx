@@ -54,12 +54,12 @@ export default function UserForm({
 
   return (
     <>
-      <div className="text-4xl my-4 text-amber-500 font-bold">
+      <div className="text-2xl md:text-3xl lg:text-4xl my-4 text-amber-500 font-bold">
         {type === "login" ? "Login" : "Signup"}
       </div>
       <div className="my-2">
         <label
-          className="font-semibold text-amber-300 text-2xl"
+          className="font-semibold text-amber-300 text-lg md:text-2xl"
           title="username"
         >
           Username
@@ -76,7 +76,7 @@ export default function UserForm({
       </div>
       <div className="my-2">
         <label
-          className="font-semibold text-amber-300 text-2xl"
+          className="font-semibold text-amber-300 text-lg md:text-2xl"
           title="password"
         >
           Password
@@ -106,7 +106,7 @@ export default function UserForm({
 
       <div className="my-2 flex items-end justify-center">
         <Button
-          className="text-2xl p-2.5 my-2 h-fit min-w-full bg-purple-500 hover:bg-purple-800 hover:cursor-pointer"
+          className="text-lg md:text-2xl p-2.5 my-2 h-fit min-w-full bg-purple-500 hover:bg-purple-800 hover:cursor-pointer"
           variant={"default"}
           title="login"
           type="submit"
