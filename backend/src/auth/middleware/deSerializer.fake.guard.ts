@@ -2,7 +2,7 @@
 
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { FastifyRequest } from 'fastify';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../../user/user.service';
 
 @Injectable()
 export class DeSerializerGuard implements CanActivate {

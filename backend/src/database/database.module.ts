@@ -14,7 +14,7 @@ import * as userSchema from '../user/schema';
 import { Pool } from 'pg';
 import { DatabaseUrl } from './database.url';
 import testPoolConnection from './database.test';
-import { TApiResponse } from 'src/utils/types/api.types';
+import { TApiResponse } from '../../src/utils/types/api.types';
 
 const dbSchemas = {
   ...userSchema,

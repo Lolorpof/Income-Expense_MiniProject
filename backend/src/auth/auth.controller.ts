@@ -11,16 +11,16 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { ZodValidationPipe } from 'src/utils/zod/validation.pipe';
+import { ZodValidationPipe } from '../utils/zod/validation.pipe';
 import { AuthService } from './auth.service';
 import { loginUserDto, loginUserSchema } from './types/dto';
 import { Session } from './decoratorParam/session.decorator';
-import { TApiResponse } from 'src/utils/types/api.types';
+import { TApiResponse } from '../utils/types/api.types';
 import { LoginGuard } from './guard/login.guard';
 import { AuthGuard } from './guard/auth.guard';
 import { fastifySession } from '@fastify/session';
 import { Token } from './decoratorParam/token.decorator';
-import { TSerializedUser, TUser } from 'src/user/types/type';
+import { TSerializedUser, TUser } from '../user/types/type';
 import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')

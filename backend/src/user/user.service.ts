@@ -8,13 +8,13 @@ import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import {
   ADMIN_CONNECTION,
   DATABASE_CONNECTION,
-} from 'src/database/database.connection';
+} from '../database/database.connection';
 import * as schema from './schema';
 import { and, eq } from 'drizzle-orm';
 import { ConfigService } from '@nestjs/config';
 import { TRegisteredUser, TUser } from './types/type';
 import bcrypt from 'bcrypt';
-import { TServiceResponse } from 'src/utils/types/api.types';
+import { TServiceResponse } from '../utils/types/api.types';
 
 @Injectable()
 export class UserService {

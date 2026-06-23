@@ -1,5 +1,5 @@
 import 'fastify';
-import { TUser } from 'src/user/types/type';
+import { TUser } from '../user/types/type';
 
 declare module 'fastify' {
   interface Session {

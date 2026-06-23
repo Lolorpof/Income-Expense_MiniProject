@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MoneyService } from './money.service';
 import { MoneyController } from './money.controller';
-import { DatabaseModule } from 'src/database/database.module';
+import { DatabaseModule } from '../database/database.module';
 
 @Module({
   imports: [DatabaseModule],

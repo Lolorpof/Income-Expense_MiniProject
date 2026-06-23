@@ -12,9 +12,14 @@ export const ListingSchema = z.object({
     .string()
     .regex(
       /^\d{2}:\d{2}$/,
-      "time isn't in format XX:XX where X is a digit of number"
+      "time isn't in format XX:XX where X is a digit of number",
     ),
-  spentOrEarned: z.number().refine((arg) => arg !== 0, "Amount shouldn't be 0"),
+  spentOrEarned: z
+    .number()
+    .refine(
+      (arg) => Math.abs(arg) > 0 && Math.abs(arg) < 1000000,
+      "Amount should be between 0 and 1,000,000",
+    ),
   moneyDailyId: z.string(),
 });
 

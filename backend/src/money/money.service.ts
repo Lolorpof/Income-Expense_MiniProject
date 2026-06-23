@@ -5,10 +5,10 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { DATABASE_CONNECTION } from 'src/database/database.connection';
+import { DATABASE_CONNECTION } from '../database/database.connection';
 import * as schema from './schema';
 import { and, eq } from 'drizzle-orm';
-import { TUser } from 'src/user/types/type';
+import { TUser } from '../user/types/type';
 import {
   TDeleteListing,
   TIncExpDaily,
@@ -17,7 +17,7 @@ import {
   TInsertList,
   TListingEntriesComb,
 } from './types/type';
-import { TApiResponse } from 'src/utils/types/api.types';
+import { TApiResponse } from '../utils/types/api.types';
 
 @Injectable()
 export class MoneyService {

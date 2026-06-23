@@ -9,14 +9,14 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ZodValidationPipe } from 'src/utils/zod/validation.pipe';
+import { ZodValidationPipe } from '../utils/zod/validation.pipe';
 import { registerUserDto, registerUserSchema } from './types/dto';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { AuthGuard } from 'src/auth/guard/auth.guard';
-import { Token } from 'src/auth/decoratorParam/token.decorator';
+import { AuthGuard } from '../auth/guard/auth.guard';
+import { Token } from '../auth/decoratorParam/token.decorator';
 import { TRegisteredUser, TUser } from './types/type';
-import { TApiResponse } from 'src/utils/types/api.types';
-import { LoginGuard } from 'src/auth/guard/login.guard';
+import { TApiResponse } from '../utils/types/api.types';
+import { LoginGuard } from '../auth/guard/login.guard';
 
 @Controller('user')
 export class UserController {

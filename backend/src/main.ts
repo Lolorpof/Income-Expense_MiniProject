@@ -9,14 +9,15 @@ import {
 import { AppModule } from './app.module';
 import './utils/session';
 import { PgSessionStore, pool } from './utils/session';
-import fastifyCors from '@fastify/cors';
+import fastifyCors, { FastifyCorsOptions } from '@fastify/cors';
+import { FastifyInstance, FastifyPluginCallback } from 'fastify';
 
 async function bootstrap() {
   // get Adapter and Instance
   const fastifyAdapter = new FastifyAdapter({
     logger: { level: 'info', transport: { target: 'pino-pretty' } },
   });
-  const fastifyInstance = fastifyAdapter.getInstance();
+  const fastifyInstance = fastifyAdapter.getInstance<FastifyInstance>();
 
   // register plugins BEFORE Nest bootstrap app
   await fastifyInstance.register(fastifyCors, {

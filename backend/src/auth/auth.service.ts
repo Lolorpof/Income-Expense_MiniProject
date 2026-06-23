@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserService } from 'src/user/user.service';
-import { isTServiceResponse } from 'src/utils/types/api.types';
-import { TUser, TSerializedUser } from 'src/user/types/type';
+import { UserService } from '../user/user.service';
+import { isTServiceResponse } from '../utils/types/api.types';
+import { TUser, TSerializedUser } from '../user/types/type';
 import { FastifyRequest } from 'fastify';
 
 @Injectable()
