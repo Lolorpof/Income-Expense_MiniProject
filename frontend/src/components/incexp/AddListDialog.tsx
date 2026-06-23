@@ -86,6 +86,13 @@ export default function AddListDialog({
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["entry", date] });
       await queryClient.invalidateQueries({ queryKey: ["allEntries"] });
+
+      setDialogOpen(false);
+      setAction("");
+      setTime("");
+      setActionSymbol("add");
+      setAmount(0);
+
       toast.success("Successfully create listing!", {
         richColors: true,
         closeButton: true,
