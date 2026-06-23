@@ -49,7 +49,7 @@ function RouteComponent() {
     </>
   ) : (
     <>
-      <div className="w-full h-[90vh] flex justify-center">
+      <div className="w-full flex justify-center pb-20">
         <AddListDialog
           key={date}
           date={date}
@@ -57,19 +57,19 @@ function RouteComponent() {
           entry={entry}
           queryClient={queryClient}
         />
-        <div className="relative w-fit min-w-[60%] max-w-[90%] h-fit my-10 rounded-lg border-6 border-amber-600 bg-white/5 justify-center">
+        <div className="relative w-[95vw] md:w-fit md:min-w-[60%] md:max-w-[90%] h-fit my-10 rounded-lg border-6 border-amber-600 bg-white/5 justify-center">
           <ArrowLeftIcon
-            size={50}
+            size={35}
             className={`absolute top-3.5 left-3.5 rounded-[100%] bg-purple-600 hover:bg-purple-800 hover:cursor-pointer hover:scale-125 text-amber-500 duration-200`}
             onClick={() => navigate({ to: "/", search: { date: date } })}
           />
 
           <h2 className="text-center">
-            <div className="m-10 mb-5 text-4xl font-bold text-white">
+            <div className="m-4 mb-3 md:m-10 md:mb-5 text-xl md:text-2xl lg:text-4xl font-bold text-white">
               {displayDate}
             </div>
-            <div className="min-w-fit">
-              <div className="flex flex-wrap min-w-max p-1 m-0 mb-4 h-fit text-2xl font-bold">
+            <div className="w-full">
+              <div className="flex flex-wrap p-1 m-0 mb-4 h-fit text-sm md:text-lg lg:text-2xl font-bold">
                 <span className="flex-1 py-2 mx-2 bg-red-500/40 text-amber-500">
                   Total Spent:{" "}
                   <motion.span

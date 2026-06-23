@@ -41,7 +41,7 @@ services:
         condition: service_healthy
   frontend:
     container_name: incexp_frontend
-    image: incexp_fe:test
+    image: incexp_fe:latest
     ports:
       - "${FRONTEND_MAP_PORT}:${NGINX_PORT}"
     environment:

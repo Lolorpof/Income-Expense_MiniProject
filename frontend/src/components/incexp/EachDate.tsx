@@ -45,11 +45,11 @@ export default function EachDate({
       >
         <span
           className={
-            "absolute md:text-md lg:text-2xl text-amber-300 mt-2 max-w-[30%] max-h-[30%] text-center" +
+            "absolute text-[10px] sm:text-xs md:text-md lg:text-2xl text-amber-300 mt-0.5 md:mt-2 text-center" +
             (day + 1 === currentDate.getDate() &&
             currentMonth === currentDate.getMonth() &&
             currentYear === currentDate.getFullYear()
-              ? " px-1 py-0.5 rounded-4xl bg-amber-500 text-violet-800 shadow-purple-300/70 shadow-md font-bold"
+              ? " px-0.5 md:px-1 rounded-4xl bg-amber-500 text-violet-800 shadow-purple-300/70 shadow-md font-bold"
               : " font-semibold")
           }
         >

@@ -30,7 +30,7 @@ function RouteComponent() {
   ) : (
     <>
       <div className="flex flex-col items-center py-2 my-10">
-        <div className="rounded-lg flex flex-col bg-gray-900 p-8 shadow-amber-300 shadow-xl w-[25dvw]">
+        <div className="rounded-lg flex flex-col bg-gray-900 p-8 shadow-amber-300 shadow-xl w-[90vw] sm:w-[60vw] md:w-[40vw] lg:w-[25dvw]">
           {(!type || type === "login") && (
             <UserForm
               key={type || "login"}

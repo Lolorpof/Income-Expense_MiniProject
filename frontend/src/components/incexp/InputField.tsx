@@ -67,9 +67,9 @@ export default function InputField<T>({
                 `${inputClassName} ` +
                 "mt-1 " +
                 (type === "time"
-                  ? "min-w-fit w-fit"
+                  ? "flex-1 min-w-0"
                   : type === "number"
-                  ? "min-w-fit w-fit"
+                  ? "flex-1 min-w-0"
                   : "min-w-full w-full")
               }
               placeholder={placeholder}
