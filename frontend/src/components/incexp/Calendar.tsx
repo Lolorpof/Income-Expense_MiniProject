@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronRightIcon, ChevronLeftIcon } from "lucide-react";
 import "./calendar.css";
 import { days, months } from "@/utils/calendar/calendar.util";
@@ -9,6 +9,10 @@ import EachDate from "./EachDate";
 import { getAllEntriesDateIdByUserId } from "@/fetching/queries/getAllEntriesDateIdByUserId";
 import { Spinner } from "../ui/spinner";
 import dayjs from "dayjs";
+import type { TIncExpDateId } from "@/types/money.type";
+import { toast } from "sonner";
+import { Button } from "../ui/button";
+import { ca } from "zod/v4/locales";
 
 export default function Calendar({
   prevDateState,
@@ -18,6 +22,7 @@ export default function Calendar({
   currentUser: TUser;
 }) {
   const currentDate = new Date();
+  const baseOldestYear = 10;
   const prevDate = prevDateState ? dayjs(prevDateState).toDate() : undefined;
   const [dir, setDir] = useState(0);
   const [calendarState, setCalendarState] = useState(() => ({
@@ -26,22 +31,43 @@ export default function Calendar({
   }));
 
   const [currentMonthFirstDateDay, setCurrentMonthFirstDateDay] = useState(
-    new Date(calendarState.year, calendarState.month, 1).getDay()
+    new Date(calendarState.year, calendarState.month, 1).getDay(),
   );
   const [daysInCurrentMonth, setDaysInCurrentMonth] = useState(
-    new Date(calendarState.year, calendarState.month + 1, 0).getDate()
+    new Date(calendarState.year, calendarState.month + 1, 0).getDate(),
   );
 
   const { data: entries, isLoading } = useQuery(
-    getAllEntriesDateIdByUserId(currentUser.id)
+    getAllEntriesDateIdByUserId(currentUser.id),
   );
+
+  const oldestYearAvail = useMemo(() => {
+    const defaultOldestYear = currentDate.getFullYear() - baseOldestYear;
+    if (entries?.ok) {
+      if (entries.data.length <= 0) return defaultOldestYear;
+
+      const oldestYear = entries.data.reduce((prev, cur) => {
+        return new Date(prev.date).getFullYear() <
+          new Date(cur.date).getFullYear()
+          ? prev
+          : cur;
+      });
+
+      return Math.min(
+        defaultOldestYear,
+        new Date(oldestYear.date).getFullYear(),
+      );
+    }
+
+    return defaultOldestYear;
+  }, [entries]);
 
   useEffect(() => {
     setCurrentMonthFirstDateDay(
-      new Date(calendarState.year, calendarState.month, 1).getDay()
+      new Date(calendarState.year, calendarState.month, 1).getDay(),
     );
     setDaysInCurrentMonth(
-      new Date(calendarState.year, calendarState.month + 1, 0).getDate()
+      new Date(calendarState.year, calendarState.month + 1, 0).getDate(),
     );
   }, [calendarState.month, calendarState.year]);
 
@@ -58,7 +84,38 @@ export default function Calendar({
     });
   }
 
+  function today() {
+    if (
+      calendarState.year === currentDate.getFullYear() &&
+      calendarState.month === currentDate.getMonth()
+    )
+      return;
+    else if (calendarState.year < currentDate.getFullYear()) {
+      setDir(1);
+    } else if (
+      calendarState.year === currentDate.getFullYear() &&
+      calendarState.month < currentDate.getMonth()
+    ) {
+      setDir(1);
+    } else setDir(-1);
+
+    requestAnimationFrame(() => {
+      setCalendarState({
+        month: currentDate.getMonth(),
+        year: currentDate.getFullYear(),
+      });
+    });
+  }
+
   function prev() {
+    if (calendarState.month === 0 && calendarState.year <= oldestYearAvail) {
+      toast.error(
+        "Can't go to the past for more than 10 years, unless you have an entry earlier.",
+        { richColors: true, position: "top-center", closeButton: true },
+      );
+      return;
+    }
+
     setDir(-1);
     requestAnimationFrame(() => {
       setCalendarState((prev) => {
@@ -105,6 +162,15 @@ export default function Calendar({
             </AnimatePresence>
             <div className="flex justify-center">
               <div className="flex mr-4 justify-between place-items-center">
+                {/* <button className="mr-[10%] font-bold text-lg text-white bg-amber-500 p-1.5 rounded-md hover:bg-amber-700  cursor-pointer duration-200">
+                  Today
+                </button> */}
+                <Button
+                  onClick={today}
+                  className="mr-[10%] font-bold text-lg text-white bg-amber-500 p-2 rounded-md hover:bg-amber-700 hover:scale-110 cursor-pointer"
+                >
+                  Today
+                </Button>
                 <ChevronLeftIcon
                   className="w-[100%] text-amber-300 size-6 md:size-10 rounded-md hover:cursor-pointer hover:text-accent hover:bg-gray-700 duration-300 "
                   onClick={() => prev()}
@@ -160,7 +226,7 @@ export default function Calendar({
                           calendarState.month + 1 >= 10
                             ? calendarState.month + 1
                             : `0${calendarState.month + 1}`
-                        }-${i + 1 >= 10 ? i + 1 : `0${i + 1}`}`
+                        }-${i + 1 >= 10 ? i + 1 : `0${i + 1}`}`,
                     )}
                   />
                 ))}
