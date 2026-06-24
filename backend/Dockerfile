@@ -1,17 +1,19 @@
-FROM node:22-alpine AS build
+FROM node:24-alpine AS build
 WORKDIR /app
 RUN npm install -g pnpm
 COPY package*.json .
-COPY pnpm-lock.yaml .
-RUN pnpm install --frozen-lockfile
+COPY pnpm-*.yaml .
+RUN pnpm ci
+# RUN pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm run build
 
-FROM node:22-alpine AS prod
+FROM node:24-alpine AS prod
 WORKDIR /app
 RUN apk add --no-cache curl postgresql-client dos2unix
 RUN npm install -g pnpm
 COPY package*.json .
+COPY pnpm-*.yaml .
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/node_modules ./node_modules
 # copy necessary file for db migration into ./temp, which will be removed during runtime after migration

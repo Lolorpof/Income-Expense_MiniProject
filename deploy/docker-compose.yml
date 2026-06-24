@@ -21,7 +21,7 @@ services:
       - the-network
   backend:
     container_name: incexp_backend
-    image: incexp_be:test
+    image: incexp_be:latest
     ports:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
     env_file:

@@ -9,10 +9,8 @@ import EachDate from "./EachDate";
 import { getAllEntriesDateIdByUserId } from "@/fetching/queries/getAllEntriesDateIdByUserId";
 import { Spinner } from "../ui/spinner";
 import dayjs from "dayjs";
-import type { TIncExpDateId } from "@/types/money.type";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
-import { ca } from "zod/v4/locales";
 
 export default function Calendar({
   prevDateState,

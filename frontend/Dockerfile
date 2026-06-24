@@ -1,9 +1,9 @@
-FROM node:22-alpine AS build
+FROM node:24-alpine AS build
 WORKDIR /app
 RUN npm install -g pnpm
 COPY package*.json .
-COPY pnpm-lock.yaml .
-RUN pnpm install --frozen-lockfile 
+COPY pnpm-*.yaml .
+RUN pnpm ci
 COPY . .
 RUN pnpm run build
 
